@@ -218,6 +218,104 @@ Segment * Channel::findSetAvailableNeighbours(Segment * t, std::list<Segment *> 
 		}
 	}
 	else{
+		if (hv == 'h'){
+			if (w % 2 == 0){ // W->E --->
+				if (x < (N - 1)){
+					csStatus = segmentAt('h', x + 1, y, w)->checkAndSet(t);
+					if (csStatus == ISTARGET)
+						return segmentAt('h', x + 1, y, w);
+					if (csStatus == OK)
+						neigh->push_back(segmentAt('h', x + 1, y, w));
+				}
+				if (y > 0){
+					csStatus = segmentAt('v', x + 1, y - 1, w)->checkAndSet(t);
+					if (csStatus == ISTARGET)
+						return segmentAt('v', x + 1, y - 1, w); //Target Found!
+					if (csStatus == OK)
+						neigh->push_back(segmentAt('v', x + 1, y - 1, w)); //Segment marked, add to list
+				}
+				if (y < N){
+					csStatus = segmentAt('v', x + 1, y, w+1)->checkAndSet(t);
+					if (csStatus == ISTARGET)
+						return segmentAt('v', x + 1, y, w+1); //Target Found!
+					if (csStatus == OK)
+						neigh->push_back(segmentAt('v', x + 1, y, w+1)); //Segment marked, add to list
+				}
+			}
+			else{ // E->W <----
+				if (x > 0){ // horiz left
+					csStatus = segmentAt('h', x - 1, y, w)->checkAndSet(t);
+					if (csStatus == ISTARGET)
+						return segmentAt('h', x - 1, y, w); //Target Found!
+					if (csStatus == OK)
+						neigh->push_back(segmentAt('h', x - 1, y, w)); //Segment marked, add to list
+				}
+				if (y > 0){
+					csStatus = segmentAt('v', x, y - 1, w-1)->checkAndSet(t);
+					if (csStatus == ISTARGET)
+						return segmentAt('v', x, y - 1, w-1); //Target Found!
+					if (csStatus == OK)
+						neigh->push_back(segmentAt('v', x, y - 1, w-1)); //Segment marked, add to list
+				}
+				if (y < N){
+					csStatus = segmentAt('v', x, y, w)->checkAndSet(t);
+					if (csStatus == ISTARGET)
+						return segmentAt('v', x, y, w); //Target Found!
+					if (csStatus == OK)
+						neigh->push_back(segmentAt('v', x, y, w)); //Segment marked, add to list
+				}
+			}
+		}
+		else {
+			if (w % 2 == 0){ // N->S V
+				if (y > 0){
+					csStatus = segmentAt('v', x, y - 1, w)->checkAndSet(t);
+					if (csStatus == ISTARGET)
+						return segmentAt('v', x, y - 1, w); //Target Found!
+					if (csStatus == OK)
+						neigh->push_back(segmentAt('v', x, y - 1, w)); //Segment marked, add to list
+				}
+			
+				if (x > 0){
+					csStatus = segmentAt('h', x - 1, y, w+1)->checkAndSet(t);
+					if (csStatus == ISTARGET)
+						return segmentAt('h', x - 1, y, w+1); //Target Found!
+					if (csStatus == OK)
+						neigh->push_back(segmentAt('h', x - 1, y, w+1)); //Segment marked, add to list
+				}
+				if (x<N){
+					csStatus = segmentAt('h', x, y, w)->checkAndSet(t);
+					if (csStatus == ISTARGET)
+						return segmentAt('h', x, y, w); //Target Found!
+					if (csStatus == OK)
+						neigh->push_back(segmentAt('h', x, y, w)); //Segment marked, add to list
+				}
+			}
+			else{ // S->N ^
+				if (y < (N - 1)){
+					csStatus = segmentAt('v', x, y + 1, w)->checkAndSet(t);
+					if (csStatus == ISTARGET)
+						return segmentAt('v', x, y + 1, w); //Target Found!
+					if (csStatus == OK)
+						neigh->push_back(segmentAt('v', x, y + 1, w)); //Segment marked, add to list
+				}
+				if (x > 0){
+					csStatus = segmentAt('h', x - 1, y + 1, w)->checkAndSet(t);
+					if (csStatus == ISTARGET)
+						return segmentAt('h', x - 1, y + 1, w); //Target Found!
+					if (csStatus == OK)
+						neigh->push_back(segmentAt('h', x - 1, y + 1, w)); //Segment marked, add to list
+				}
+				if (x<N){
+					csStatus = segmentAt('h', x, y + 1, w-1)->checkAndSet(t);
+					if (csStatus == ISTARGET)
+						return segmentAt('h', x, y + 1, w-1); //Target Found!
+					if (csStatus == OK)
+						neigh->push_back(segmentAt('h', x, y + 1, w-1)); //Segment marked, add to list
+				}
+			}
+
+		}
 
 	}
 	return nullptr;
