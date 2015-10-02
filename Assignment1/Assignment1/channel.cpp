@@ -411,6 +411,7 @@ Segment* Channel::segmentAt(char hv, int x, int y, int w){
 	else
 		return &(vert[x][y][w]);
 }
+
 Segment* Channel::segmentAt(wire w){
 	if (std::get<0>(w) == 'h')
 		return &(horiz[std::get<1>(w)][std::get<2>(w)][std::get<3>(w)]);
@@ -418,10 +419,7 @@ Segment* Channel::segmentAt(wire w){
 		return &(vert[std::get<1>(w)][std::get<2>(w)][std::get<3>(w)]);
 }
 
-/*
-Marks back from a destination pin to source pin
-dest - destination
-*/
+
 void Channel::traceback(Segment * dest){
 	pin src = dest->getSource();
 	//int len = t->getLength();
@@ -679,4 +677,42 @@ void Channel::traceback(Segment * dest){
 		}
 	}
 	return;
+}
+
+
+int Channel::routingSegmentsUsed() {
+	int count = 0;
+	for (int i = 0; i < N; i ++ ) {
+		for (int j = 0; j < N + 1; j++) {
+			for (int k = 0; k < W; k++) {
+				if (vert[j][i][k].isUsed()) count++;
+				if (horiz[i][j][k].isUsed()) count++;
+			}
+		}
+	}
+	return count;
+}
+
+int Channel::maxW() {
+	int count = 0;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N + 1; j++) {
+			int temp = 0;
+			for (int k = 0; k < W; k++) {
+				if (horiz[i][j][k].isUsed()) temp++;
+			}
+			if (temp > count) count = temp;
+		}
+	}				
+	for (int i = 0; i < N+1; i++) {
+		for (int j = 0; j < N; j++) {
+			int temp = 0;
+			for (int k = 0; k < W; k++) {
+				if (vert[i][j][k].isUsed()) temp++;
+			}
+			if (temp > count) count = temp;
+		}
+	}
+
+	return count;
 }

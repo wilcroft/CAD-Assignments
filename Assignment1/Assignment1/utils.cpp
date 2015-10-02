@@ -51,7 +51,7 @@ int parseInputFile(char * fname, int * n, int * w, std::list<Connection> * connl
 		cerr << "Error: '" << temp << "' is not a valid decimal integer" << endl;
 		return -1;
 	}
-	cout << "n=" << temp << endl;
+	//cout << "n=" << temp << endl;
 	utilvars::graphn = *n;
 
 	//get the value for w
@@ -65,12 +65,12 @@ int parseInputFile(char * fname, int * n, int * w, std::list<Connection> * connl
 		cerr << "Error: '" << temp << "' is not a valid decimal integer" << endl;
 		return -1;
 	}
-	cout << "w=" << temp << endl;
+	//cout << "w=" << temp << endl;
 	utilvars::graphw = *w;
 
 	std::getline(fs, temp);
 	while (!fs.eof()){
-		cout << "'" << temp << "'" << endl;
+	//	cout << "'" << temp << "'" << endl;
 		for (int i = 0; i < 6; i++){
 			try{ item[i] = std::stoi(temp, &idx); }
 			catch (const std::invalid_argument& ia) {

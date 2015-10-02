@@ -28,6 +28,8 @@ public:
 
 	void resetRouting();
 	void clearAttempt();
+	int routingSegmentsUsed();
+	int maxW();
 	bool findSetAvailableNeighbours(wire t, std::list<wire>* neigh);
 	Segment * findSetAvailableNeighbours(Segment * t, std::list<Segment *> * neigh);
 	bool route(pin src, pin dest);
@@ -35,8 +37,7 @@ public:
 	Segment* segmentAt(bool horiz, int x, int y, int w);
 	Segment* segmentAt(wire w);
 	Segment* segmentAt(char hv, int x, int y, int w);
-
-	void traceback(Segment * dest); //, Segment * src);
+	void traceback(Segment * dest); 
 
 };
 

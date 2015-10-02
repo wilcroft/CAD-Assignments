@@ -33,8 +33,8 @@ int main(int argc, char ** argv){
 		return -1;
 	}
 
-	parseInputFile(argv[1], &chipn, &chipw, &connlist);
-	printConnList(connlist);
+	if (parseInputFile(argv[1], &chipn, &chipw, &connlist) != 0) return -1;
+	//printConnList(connlist);
 
 	utilvars::initial_coords = t_bound_box(0, 0, (chipw * 2 + 1)*(2 * chipn + 1), (chipw * 2 + 1)*(2 * chipn + 1));
 
@@ -83,6 +83,8 @@ int main(int argc, char ** argv){
 		update_message(message);
 	}
 	else	update_message("Done!");
+	cout << "Used " << utilvars::routing->routingSegmentsUsed() << " wire segments." << endl;
+	cout << "Widest channel used: " << utilvars::routing->maxW() << endl;
 	event_loop(NULL, NULL, NULL, drawscreen);
 	return 0;
 }
