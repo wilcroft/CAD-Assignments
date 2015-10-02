@@ -337,7 +337,7 @@ bool Channel::route(pin src, pin dest){
 		return false;
 	else isOK = false;
 
-	//event_loop(NULL, NULL, NULL, drawscreen);
+//	event_loop(NULL, NULL, NULL, drawscreen);
 	std::list<Segment*> expansion;
 	std::list<Segment*> temp;
 
@@ -365,7 +365,8 @@ bool Channel::route(pin src, pin dest){
 		return false;
 
 	Segment* toProcess, * trace=nullptr;
-	while (!expansion.empty() && trace==nullptr){
+	while (!expansion.empty() && trace == nullptr){
+//		event_loop(NULL, NULL, NULL, drawscreen);
 		toProcess = expansion.front();
 		expansion.pop_front();
 		trace=findSetAvailableNeighbours(toProcess, &temp);
@@ -552,7 +553,7 @@ void Channel::traceback(Segment * dest){
 	else{
 		//The unidirectional case!
 		if (hv == 'h'){
-			if (w % 2 == 0){ // W->E --->
+			if (w % 2 == 1){ // W->E --->
 				//First Pass - try to reuse
 				if (x < (N - 1) && segmentAt('h', x + 1, y, w)->getLength() == l - 1
 					&& segmentAt('h', x + 1, y, w)->isUsed()){
@@ -562,9 +563,9 @@ void Channel::traceback(Segment * dest){
 					&& segmentAt('v', x + 1, y - 1, w)->isUsed()){
 					traceback(segmentAt('v', x + 1, y - 1, w)); //Segment marked, add to list
 				}
-				else if (y < N && segmentAt('v', x + 1, y, w + 1)->getLength() == l - 1
-					&& segmentAt('v', x + 1, y, w + 1)->isUsed()){
-					traceback(segmentAt('v', x + 1, y, w + 1)); //Segment marked, add to list
+				else if (y < N && segmentAt('v', x + 1, y, w - 1)->getLength() == l - 1
+					&& segmentAt('v', x + 1, y, w - 1)->isUsed()){
+					traceback(segmentAt('v', x + 1, y, w - 1)); //Segment marked, add to list
 				}
 				//Second pass
 				else if (x < (N - 1) && segmentAt('h', x + 1, y, w)->getLength() == l - 1){
@@ -577,10 +578,10 @@ void Channel::traceback(Segment * dest){
 					segmentAt('v', x + 1, y - 1, w)->setSource(src);
 					traceback(segmentAt('v', x + 1, y - 1, w)); //Segment marked, add to list
 				}
-				else if (y < N && segmentAt('v', x + 1, y, w + 1)->getLength() == l - 1){
-					segmentAt('v', x + 1, y, w + 1)->setState(USED);
-					segmentAt('v', x + 1, y, w + 1)->setSource(src);
-					traceback(segmentAt('v', x + 1, y, w + 1)); //Segment marked, add to list
+				else if (y < N && segmentAt('v', x + 1, y, w - 1)->getLength() == l - 1){
+					segmentAt('v', x + 1, y, w - 1)->setState(USED);
+					segmentAt('v', x + 1, y, w - 1)->setSource(src);
+					traceback(segmentAt('v', x + 1, y, w - 1)); //Segment marked, add to list
 				}
 			}
 			else{ // E->W <----
@@ -588,9 +589,9 @@ void Channel::traceback(Segment * dest){
 					&& segmentAt('h', x - 1, y, w)->isUsed()){
 					traceback(segmentAt('h', x - 1, y, w)); //Segment marked, add to list
 				}
-				else if (y > 0 && segmentAt('v', x, y - 1, w - 1)->getLength() == l - 1
-					&& segmentAt('v', x, y - 1, w - 1)->isUsed()){
-					traceback(segmentAt('v', x, y - 1, w - 1)); //Segment marked, add to list
+				else if (y > 0 && segmentAt('v', x, y - 1, w + 1)->getLength() == l - 1
+					&& segmentAt('v', x, y - 1, w + 1)->isUsed()){
+					traceback(segmentAt('v', x, y - 1, w + 1)); //Segment marked, add to list
 				}
 				else if (y < N && segmentAt('v', x, y, w)->getLength() == l - 1
 					&& segmentAt('v', x, y, w)->isUsed()){
@@ -601,10 +602,10 @@ void Channel::traceback(Segment * dest){
 					segmentAt('h', x - 1, y, w)->setSource(src);
 					traceback(segmentAt('h', x - 1, y, w)); //Segment marked, add to list
 				}
-				else if (y > 0 && segmentAt('v', x, y - 1, w - 1)->getLength() == l - 1){
-					segmentAt('v', x, y - 1, w - 1)->setState(USED);
-					segmentAt('v', x, y - 1, w - 1)->setSource(src);
-					traceback(segmentAt('v', x, y - 1, w - 1)); //Segment marked, add to list
+				else if (y > 0 && segmentAt('v', x, y - 1, w + 1)->getLength() == l - 1){
+					segmentAt('v', x, y - 1, w + 1)->setState(USED);
+					segmentAt('v', x, y - 1, w + 1)->setSource(src);
+					traceback(segmentAt('v', x, y - 1, w + 1)); //Segment marked, add to list
 				}
 				else if (y < N && segmentAt('v', x, y, w)->getLength() == l - 1){
 					segmentAt('v', x, y, w)->setState(USED);
@@ -614,15 +615,15 @@ void Channel::traceback(Segment * dest){
 			}
 		}
 		else {
-			if (w % 2 == 0){ // N->S V
+			if (w % 2 == 1){ // N->S V
 				if (y > 0 && segmentAt('v', x, y - 1, w)->getLength() == l - 1
 					&& segmentAt('v', x, y - 1, w)->isUsed()){
 					traceback(segmentAt('v', x, y - 1, w)); //Segment marked, add to list
 				}
 
-				else if (x > 0 && segmentAt('h', x - 1, y, w + 1)->getLength() == l - 1
-					&& segmentAt('h', x - 1, y, w + 1)->isUsed()){
-					traceback(segmentAt('h', x - 1, y, w + 1)); //Segment marked, add to list
+				else if (x > 0 && segmentAt('h', x - 1, y, w - 1)->getLength() == l - 1
+					&& segmentAt('h', x - 1, y, w - 1)->isUsed()){
+					traceback(segmentAt('h', x - 1, y, w - 1)); //Segment marked, add to list
 				}
 				else if (x<N && segmentAt('h', x, y, w)->getLength() == l - 1
 					&& segmentAt('h', x, y, w)->isUsed()){
@@ -634,10 +635,10 @@ void Channel::traceback(Segment * dest){
 					traceback(segmentAt('v', x, y - 1, w)); //Segment marked, add to list
 				}
 
-				else if (x > 0 && segmentAt('h', x - 1, y, w + 1)->getLength() == l - 1){
-					segmentAt('h', x - 1, y, w + 1)->setState(USED);
-					segmentAt('h', x - 1, y, w + 1)->setSource(src);
-					traceback(segmentAt('h', x - 1, y, w + 1)); //Segment marked, add to list
+				else if (x > 0 && segmentAt('h', x - 1, y, w - 1)->getLength() == l - 1){
+					segmentAt('h', x - 1, y, w - 1)->setState(USED);
+					segmentAt('h', x - 1, y, w - 1)->setSource(src);
+					traceback(segmentAt('h', x - 1, y, w - 1)); //Segment marked, add to list
 				}
 				else if (x<N && segmentAt('h', x, y, w)->getLength() == l - 1){
 					segmentAt('h', x, y, w)->setState(USED);
@@ -654,9 +655,9 @@ void Channel::traceback(Segment * dest){
 					&& segmentAt('h', x - 1, y + 1, w)->isUsed()){
 					traceback(segmentAt('h', x - 1, y + 1, w)); //Segment marked, add to list
 				}
-				else if (x<N && segmentAt('h', x, y + 1, w - 1)->getLength() == l - 1
-					&& segmentAt('h', x, y + 1, w - 1)->isUsed()){
-					traceback(segmentAt('h', x, y + 1, w - 1)); //Segment marked, add to list
+				else if (x<N && segmentAt('h', x, y + 1, w + 1)->getLength() == l - 1
+					&& segmentAt('h', x, y + 1, w + 1)->isUsed()){
+					traceback(segmentAt('h', x, y + 1, w + 1)); //Segment marked, add to list
 				}
 				else if (y < (N - 1) && segmentAt('v', x, y + 1, w)->getLength() == l - 1){
 					segmentAt('v', x, y + 1, w)->setState(USED);
@@ -668,10 +669,10 @@ void Channel::traceback(Segment * dest){
 					segmentAt('h', x - 1, y + 1, w)->setSource(src);
 					traceback(segmentAt('h', x - 1, y + 1, w)); //Segment marked, add to list
 				}
-				else if (x<N && segmentAt('h', x, y + 1, w - 1)->getLength() == l - 1){
-					segmentAt('h', x, y + 1, w - 1)->setState(USED);
-					segmentAt('h', x, y + 1, w - 1)->setSource(src);
-					traceback(segmentAt('h', x, y + 1, w - 1)); //Segment marked, add to list
+				else if (x<N && segmentAt('h', x, y + 1, w + 1)->getLength() == l - 1){
+					segmentAt('h', x, y + 1, w + 1)->setState(USED);
+					segmentAt('h', x, y + 1, w + 1)->setSource(src);
+					traceback(segmentAt('h', x, y + 1, w + 1)); //Segment marked, add to list
 				}
 			}
 

@@ -13,7 +13,7 @@ enum CHANNELMODE{
 	UNIDIR
 };
 
-#define MODE BIDIR
+#define MODE UNIDIR
 
 class Channel{
 private:

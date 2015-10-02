@@ -129,6 +129,7 @@ void drawscreen(){
 			fillrect((2 * i + 1)*subsq, (2 * j + 1)*subsq, 2 *(i+1)*subsq - 1, 2 *(j+1)*subsq - 1);
 			for (int k = 1; k < 5; k++){
 				pin p = std::make_tuple(i, j, k);
+				bool ok = p == std::make_tuple(0, 2, 4);
 				for (int w = 0; w < utilvars::graphw; w++){
 					if (utilvars::routing->segmentAt(p, w)->getSource() == p)
 						drawPinToWire(p, w);
@@ -202,7 +203,54 @@ void drawSwitchConnections(bool isHoriz, int x, int y, int w){
 
 	}
 	else{
-
+		if (isHoriz){
+			if (w % 2 == 0){ // W->E --->
+				if (x < (utilvars::graphn - 1) && utilvars::routing->segmentAt('h', x + 1, y, w)->getSource() == src && utilvars::routing->segmentAt('h', x + 1, y, w)->isUsed()){
+					drawline((x + 1) * 2 * subsq - 1, subsq*y * 2 + 2 * w + 1, (2 * x + 3)*subsq, subsq*y * 2 + 2 * w + 1);
+				}
+				if (y > 0 && utilvars::routing->segmentAt('v', x + 1, y - 1, w)->getSource() == src && utilvars::routing->segmentAt('v', x + 1, y - 1, w)->isUsed()){
+					drawline((x + 1) * 2 * subsq - 1, subsq*y * 2 + 2 * w + 1, subsq*(x + 1) * 2 + 2 * w + 1, (y)* 2 * subsq - 1);
+				}
+				if (y < utilvars::graphn && utilvars::routing->segmentAt('v', x + 1, y, w + 1)->getSource() == src && utilvars::routing->segmentAt('v', x + 1, y, w + 1)->isUsed()){
+					drawline((x + 1) * 2 * subsq - 1, subsq*y * 2 + 2 * w + 1, subsq*(x + 1) * 2 + 2 * (w+1) + 1, (2 * y + 1)*subsq);
+				}
+			}
+			else{ // E->W <----
+				if (x > 0 && utilvars::routing->segmentAt('h', x - 1, y, w)->getSource() == src && utilvars::routing->segmentAt('h', x - 1, y, w)->isUsed()){
+					drawline((2 * x + 1)*subsq, subsq*y * 2 + 2 * w + 1, (x)* 2 * subsq - 1, subsq*y * 2 + 2 * w + 1);
+				}
+				if (y > 0 && utilvars::routing->segmentAt('v', x, y - 1, w - 1)->getSource() == src && utilvars::routing->segmentAt('v', x, y - 1, w - 1)->isUsed()){
+					drawline((2 * x + 1)*subsq, subsq*y * 2 + 2 * w + 1, subsq*x * 2 + 2 * (w-1) + 1, (y)* 2 * subsq - 1);
+				}
+				if (y < utilvars::graphn && utilvars::routing->segmentAt('v', x, y, w)->getSource() == src && utilvars::routing->segmentAt('v', x, y, w)->isUsed()){
+					drawline((2 * x + 1)*subsq, subsq*y * 2 + 2 * w + 1, subsq*x * 2 + 2 * w + 1, (2 * y + 1)*subsq);
+				}
+			}
+		}
+		else {
+			if (w % 2 == 0){ // N->S V
+				if (y > 0 && utilvars::routing->segmentAt('v', x, y - 1, w)->getSource() == src && utilvars::routing->segmentAt('v', x, y - 1, w)->isUsed()){
+					drawline(subsq*x * 2 + 2 * w + 1, (2 * y + 1)*subsq, subsq*x * 2 + 2 * w + 1, (y)* 2 * subsq - 1);
+				}
+				if (x > 0 && utilvars::routing->segmentAt('h', x - 1, y, w + 1)->getSource() == src && utilvars::routing->segmentAt('h', x - 1, y, w + 1)->isUsed()){
+					drawline(subsq*x * 2 + 2 * w + 1, (2 * y + 1)*subsq, (x) * 2 * subsq - 1, subsq*y * 2 + 2 * (w+1) + 1);
+				}
+				if (x<utilvars::graphn && utilvars::routing->segmentAt('h', x, y, w)->getSource() == src && utilvars::routing->segmentAt('h', x, y, w)->isUsed()){
+					drawline(subsq*x * 2 + 2 * w + 1, (2 * y + 1)*subsq, (2 * x + 1)*subsq, subsq*y * 2 + 2 * w + 1);
+				}
+			}
+			else{ // S->N ^
+				if (y < (utilvars::graphn - 1) && utilvars::routing->segmentAt('v', x, y + 1, w)->getSource() == src && utilvars::routing->segmentAt('v', x, y + 1, w)->isUsed()){
+					drawline(subsq*x * 2 + 2 * w + 1, (y + 1) * 2 * subsq - 1, subsq*x * 2 + 2 * w + 1, (2 * y + 3)*subsq);
+				}
+				if (x > 0 && utilvars::routing->segmentAt('h', x - 1, y + 1, w)->getSource() == src && utilvars::routing->segmentAt('h', x - 1, y + 1, w)->isUsed()){
+					drawline(subsq*x * 2 + 2 * w + 1, (y + 1) * 2 * subsq - 1, (x) * 2 * subsq - 1, subsq*(y+1)* 2 + 2 * w + 1);
+					}
+				if (x<utilvars::graphn && utilvars::routing->segmentAt('h', x, y + 1, w - 1)->getSource() == src && utilvars::routing->segmentAt('h', x, y + 1, w - 1)->isUsed()){
+					drawline(subsq*x * 2 + 2 * w + 1, (y + 1) * 2 * subsq - 1, (2 * x + 1)*subsq, subsq*(y+1)* 2 + 2 *(w-1) + 1);
+				}
+			}
+		}
 	}
 }
 
