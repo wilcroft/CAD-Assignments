@@ -37,7 +37,8 @@ ifeq ($(PLATFORM),X11)
 endif
 
 $(EXE): graphics.o channel.o connection.o segment.o utils.o main.o
-	g++ $(FLAGS) $^ $(GRAPHICS_LIBS) -o $(EXE)
+	g++ $(FLAGS) -DMODE=BIDIR $^ $(GRAPHICS_LIBS) -o $(EXE)-bidir
+	g++ $(FLAGS) -DMODE=UNIDIR $^ $(GRAPHICS_LIBS) -o $(EXE)-unidir
 
 # A generic make rule for creating a .o file from an identically named (sans extension) .cpp file
 # $< evaluates to the name of the _first_ dependency (the .cpp file in this case)
