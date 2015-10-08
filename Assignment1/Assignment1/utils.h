@@ -9,6 +9,8 @@
 
 #define WIN32 1
 
+#include <vector>
+#include <algorithm>
 #include <map>
 
 #include "connection.h"
@@ -44,4 +46,6 @@ void drawscreen();
 void drawWireSegment(bool isHoriz, int x, int y, int w, enum color_types c);
 void drawSwitchConnections(bool isHoriz, int x, int y, int w);
 void drawPinToWire(pin p, int w, enum color_types c = NUM_COLOR);
+std::list<Segment *> randomizeList(std::list<Segment *> l);
+
 #endif

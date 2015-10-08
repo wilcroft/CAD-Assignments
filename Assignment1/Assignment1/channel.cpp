@@ -4,6 +4,7 @@ Channel::Channel(int n, int w){
 	N = n;
 	W = w;
 //	mode = BIDIR;
+	tryHard=false;
 
 	horiz = new Segment**[N];
 	vert = new Segment  **[N + 1];
@@ -91,7 +92,7 @@ void Channel::clearAttempt(){
 
 bool Channel::findSetAvailableNeighbours(wire t, std::list<wire> * neigh){
 	neigh->clear(); 
-	int x = std::get<1>(t);
+	/*int x = std::get<1>(t);
 	int y = std::get<2>(t);
 	int w = std::get<3>(t);
 	pin p = horiz[x][y][w].getSource();
@@ -109,7 +110,7 @@ bool Channel::findSetAvailableNeighbours(wire t, std::list<wire> * neigh){
 	else {
 		seg = &vert[x][y][w];
 
-	}
+	}*/
 	return false;
 }
 
@@ -122,7 +123,7 @@ bool Channel::findSetAvailableNeighbours(wire t, std::list<wire> * neigh){
  */
 Segment * Channel::findSetAvailableNeighbours(Segment * t, std::list<Segment *> * neigh){
 	neigh->clear();
-	pin src = t->getSource();
+//	pin src = t->getSource();
 	//int len = t->getLength();
 	char hv = std::get<0>(t->getIndex());
 	int x = std::get<1>(t->getIndex());
@@ -370,6 +371,7 @@ bool Channel::route(pin src, pin dest){
 		toProcess = expansion.front();
 		expansion.pop_front();
 		trace=findSetAvailableNeighbours(toProcess, &temp);
+		if (tryHard) temp=randomizeList(temp);
 		expansion.splice(expansion.end(), temp);
 	}
 	if (trace == nullptr) return false; // No path from source to dest found
@@ -715,4 +717,7 @@ int Channel::maxW() {
 	}
 
 	return count;
+}
+void Channel::tryHarder(bool b){
+	tryHard=b;
 }

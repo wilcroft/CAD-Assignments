@@ -4,6 +4,7 @@
 #include <list>
 #include <tuple>
 #include <queue>
+#include <algorithm>
 
 #include "segment.h"
 #include "graphics.h"
@@ -13,7 +14,9 @@ enum CHANNELMODE{
 	UNIDIR
 };
 
-#define MODE UNIDIR
+#ifndef MODE
+#define MODE BIDIR
+#endif
 
 class Channel{
 private:
@@ -21,6 +24,7 @@ private:
 	Segment *** vert;
 	int N;
 	int W;
+	bool tryHard;
 //	enum CHANNELMODE mode;
 public:
 	Channel(int n, int w);
@@ -38,9 +42,11 @@ public:
 	Segment* segmentAt(wire w);
 	Segment* segmentAt(char hv, int x, int y, int w);
 	void traceback(Segment * dest); 
+	void tryHarder(bool b=true);
 
 };
 
 extern void drawscreen();
+extern std::list<Segment *> randomizeList(std::list<Segment *> l);
 
 #endif

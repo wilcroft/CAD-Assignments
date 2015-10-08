@@ -5,7 +5,7 @@
 #include <list>
 
 #define DRAWEACHROUTE 0
-#define MAXATTEMPTS 100
+#define MAXATTEMPTS 1000
 
 #include "utils.h"
 #include "connection.h"
@@ -65,9 +65,10 @@ int main(int argc, char ** argv){
 
 		if (!utilvars::routing->route(iter->src(), iter->dest())){
 			attempts++;
+			if (attempts >= MAXATTEMPTS/2) utilvars::routing->tryHarder(true);
 			string message = "Resetting routing - Attempt #" + std::to_string(attempts + 1) + "...";
-			update_message(message);
-			event_loop(NULL, NULL, NULL, drawscreen);
+			//update_message(message);
+			//event_loop(NULL, NULL, NULL, drawscreen);
 			popToFront(&connlist, iter);
 			iter = connlist.begin();
 			utilvars::routing->resetRouting();
@@ -83,6 +84,7 @@ int main(int argc, char ** argv){
 		update_message(message);
 	}
 	else	update_message("Done!");
+	cout << "Using mode " << ((MODE==BIDIR) ? "Bidir" : "Unidir") << endl;
 	cout << "Used " << utilvars::routing->routingSegmentsUsed() << " wire segments." << endl;
 	cout << "Widest channel used: " << utilvars::routing->maxW() << endl;
 	event_loop(NULL, NULL, NULL, drawscreen);

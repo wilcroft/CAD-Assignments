@@ -279,3 +279,16 @@ void drawPinToWire(pin p, int w, enum color_types c){
 	default:;
 	}
 }
+std::list<Segment *> randomizeList(std::list<Segment *> l){
+	std::list<Segment *> newl;
+	std::vector<Segment *> v;
+	for(std::list<Segment *>::iterator iter = l.begin(); iter!= l.end(); iter++){
+		v.push_back(*iter);
+	}
+	std::random_shuffle(v.begin(), v.end());
+	for (int i=0; i<v.size(); i++)
+		newl.push_back(v[i]);
+
+	return newl;
+
+}
