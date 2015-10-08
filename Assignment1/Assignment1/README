@@ -1,0 +1,8 @@
+ECE1387 - CAD Synthesis: Assignment 1 - Maze Router
+Geoffrey Elliott
+
+Compiling the Router:
+On ECF systems, the router can be compiled using 'make' on the command line. Note that, by default, the Bidirectional maze router is compiled. To select the desired mode when building, use 'make MODE=<mode>', where <mode> is your desired mode (either UNIDIR or BIDIR). If you have previously build the router, you may need to run a 'make clean' first, or run make with the -B flag to force compilation.
+
+Running the Router:
+To run the router, run './assignment1 <circuit>' where <circuit> is a text file describing the architecture and intended connects, formatted as described in the assignment handout.

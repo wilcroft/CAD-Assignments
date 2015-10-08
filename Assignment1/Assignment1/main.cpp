@@ -5,7 +5,7 @@
 #include <list>
 
 #define DRAWEACHROUTE 0
-#define MAXATTEMPTS 1000
+#define MAXATTEMPTS 100
 
 #include "utils.h"
 #include "connection.h"

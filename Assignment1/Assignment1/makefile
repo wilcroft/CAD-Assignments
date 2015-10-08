@@ -23,11 +23,13 @@ PLATFORM = X11
 #PLATFORM = WIN32
 #PLATFORM = NO_GRAPHICS
 
+MODE = 0 #0=BIDIR, 1=UNIDIR
+
 HDR = graphics.h easygl_constants.h channel.h connection.h segment.h utils.h
 SRC = graphics.cpp channel.cpp connection.cpp main.cpp segment.cpp utils.cpp
 EXE = assignment1
 BACKUP_FILENAME=`date "+backup-%Y%m%d-%H%M.zip"`
-FLAGS = -g -Wall -Wextra -pedantic -D$(PLATFORM) -std=c++11
+FLAGS = -g -Wall -Wextra -pedantic -D$(PLATFORM) -DMODE=$(MODE) -std=c++11
 
 # Need to tell the linker to link to the libraries.
 # WIN32 links to all the win32 API libraries every time (no need for flags)

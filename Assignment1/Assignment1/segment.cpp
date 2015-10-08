@@ -4,13 +4,13 @@ Segment::Segment(){
 	state = UNUSED;
 	sourcepin = std::make_tuple(-1, -1, -1);
 	destpin = std::make_tuple(-1, -1, -1);
-	int length = MAXSEGLENGTH;
+	length = MAXSEGLENGTH;
 }
 void Segment::clear(){
 	state = UNUSED;
 	sourcepin = std::make_tuple(-1, -1, -1);
 	destpin = std::make_tuple(-1, -1, -1);
-	int length = MAXSEGLENGTH;
+	length = MAXSEGLENGTH;
 
 }
 bool Segment::isTarget(){ return (state == TARGET); }
