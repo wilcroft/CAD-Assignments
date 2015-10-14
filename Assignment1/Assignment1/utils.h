@@ -24,7 +24,7 @@ using std::endl;
 
 namespace utilvars{
 	extern int graphn, graphw;
-	extern t_bound_box initial_coords;
+	//extern t_bound_box initial_coords;
 	extern Channel * routing;
 	extern std::map<pin, enum color_types> colormap;
 }

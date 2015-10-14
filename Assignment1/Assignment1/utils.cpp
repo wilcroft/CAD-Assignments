@@ -2,7 +2,7 @@
 
 namespace utilvars{
 	int graphn, graphw;
-	t_bound_box initial_coords;
+//	t_bound_box initial_coords;
 	Channel * routing;
 	std::map<pin, enum color_types> colormap;
 }

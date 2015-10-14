@@ -36,11 +36,11 @@ int main(int argc, char ** argv){
 	if (parseInputFile(argv[1], &chipn, &chipw, &connlist) != 0) return -1;
 	//printConnList(connlist);
 
-	utilvars::initial_coords = t_bound_box(0, 0, (chipw * 2 + 1)*(2 * chipn + 1), (chipw * 2 + 1)*(2 * chipn + 1));
+	//utilvars::initial_coords = t_bound_box(0, 0, (chipw * 2 + 1)*(2 * chipn + 1), (chipw * 2 + 1)*(2 * chipn + 1));
 
 	init_graphics("Maze Routing", WHITE);
-	set_visible_world(utilvars::initial_coords);
-
+	//set_visible_world(utilvars::initial_coords);
+	init_world(0, 0, (chipw * 2 + 1)*(2 * chipn + 1), (chipw * 2 + 1)*(2 * chipn + 1));
 	std::list<Connection>::iterator iter = connlist.begin();
 	utilvars::routing = new Channel(chipn, chipw);
 
@@ -81,7 +81,7 @@ int main(int argc, char ** argv){
 	}
 	if (attempts == MAXATTEMPTS){
 		string message = "Could not route after " + std::to_string(MAXATTEMPTS) + " attempts. Giving up.";
-		update_message(message);
+		update_message(message.c_str());
 	}
 	else	update_message("Done!");
 	cout << "Using mode " << ((MODE==BIDIR) ? "Bidir" : "Unidir") << endl;
