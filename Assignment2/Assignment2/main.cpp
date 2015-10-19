@@ -18,5 +18,12 @@ int main(int argc, char** argv) {
 		commonvars::allNets.rbegin()->buildBlockList(&commonvars::allBlocks);
 		commonvars::allNets.rbegin()->print();
 	}
+
+	for (auto& x : commonvars::allNets) {
+		x.buildConnections();// &commonvars::allBlocks);
+	}
+
+	initialPlace(&commonvars::allBlocks);
+
 	return 0;
 }

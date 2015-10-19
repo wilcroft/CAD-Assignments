@@ -1,6 +1,7 @@
 #pragma once
 
 #include <list>
+#include <vector>
 #include <iostream>
 #include "block.h"
 
@@ -21,5 +22,7 @@ public:
 	Net(int i);
 
 	void buildBlockList(std::list<Block> * blklst);
+	void buildConnections();// std::list<Block> * blklst);
 	void print();
+	void placeNet();
 };

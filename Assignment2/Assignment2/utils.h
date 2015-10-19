@@ -5,8 +5,6 @@
 #include <stdexcept>
 #include <list>
 
-#define WIN32 1
-
 #include <vector>
 #include <algorithm>
 #include <map>
@@ -24,6 +22,7 @@ namespace commonvars{
 	extern int graphn, graphw;
 	extern t_bound_box initial_coords;
 	extern int maxNetNum;
+	extern int numFreeBlocks;
 	extern std::list<Block> allBlocks;
 	extern std::list<Net> allNets;
 }
@@ -33,6 +32,7 @@ namespace commonvars{
 
 int parseInputFile(char * fname);
 
+void initialPlace(std::list<Block> * blocks);
 
 void drawscreen();
 //std::list<Segment *> randomizeList(std::list<Segment *> l);

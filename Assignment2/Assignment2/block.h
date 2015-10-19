@@ -11,9 +11,11 @@ class Block {
 private:
 	int num;
 	std::list<int> nets;
+	std::list<std::pair<Block *, float>> connections;
 
 	int x;
 	int y;
+	bool fixed;
 
 public:
 	Block();
@@ -27,8 +29,17 @@ public:
 	void addNet(int i);
 	void setX(int xx);
 	void setY(int yy);
+	int getX();
+	int getY();
 	int getBlockNum();
+	void setFixed(bool f=true);
+	bool isFixed();
+	void addConnection(std::pair<Block *, float> c);
+	void addConnection(Block * b, float w);
+	float getSumWeights();
+	float getWeight(Block * b);
 	void print();
+
 };
 
 

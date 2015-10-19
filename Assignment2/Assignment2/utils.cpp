@@ -4,6 +4,7 @@ namespace commonvars{
 	int graphn, graphw;
 	t_bound_box initial_coords;
 	int maxNetNum = 0;
+	int numFreeBlocks = 0;
 	std::list<Block> allBlocks;
 	std::list<Net> allNets;
 }
@@ -53,6 +54,7 @@ int parseInputFile(char * fname){
 		}
 	} while (blocknum != -1);
 	
+	commonvars::numFreeBlocks = commonvars::allBlocks.size();
 
 	//Read the Blocks + Nets
 	do {
@@ -88,6 +90,8 @@ int parseInputFile(char * fname){
 			}
 			temp.erase(0, idx);
 			it->setY(tempint);
+			it->setFixed();
+			commonvars::numFreeBlocks--;
 		}
 	} while (blocknum != -1);
 
@@ -95,6 +99,79 @@ int parseInputFile(char * fname){
 	//connlist.unique(&Connection::operator==);
 	
 	return 0;
+}
+
+void initialPlace(std::list<Block> * blocks) {
+	std::vector<float> bx;
+	std::vector<float> by;
+	std::vector<int> Ap;
+	std::vector<int> Ai;
+	std::vector<float> A;
+	std::vector<float> x;
+
+	bx.resize(commonvars::numFreeBlocks);
+	by.resize(commonvars::numFreeBlocks);
+	Ap.resize(commonvars::numFreeBlocks+1);
+	Ap[0] = 0;
+
+	unsigned int i = 0;
+	//for (std::list<Block>::iterator ita = blocks->begin(); ita != blocks->end(); ita++) {
+	for (auto& blki:*blocks){
+		int j = 0;
+		if (!blki.isFixed()) {
+			Ap[i + 1] = Ap[i];
+			for (auto& blkj : *blocks) {
+				if (&blki == &blkj) {
+					Ap[i + 1]++;
+					Ai.push_back(j);
+					A.push_back(blki.getSumWeights());
+					j++;
+				}
+				else if (blkj.isFixed()) {
+					bx[i] += blki.getWeight(&blkj)*blkj.getX();
+					by[i] += blki.getWeight(&blkj)*blkj.getY();
+				}
+				else {
+					float w = blki.getWeight(&blkj);
+					if (w != 0) {
+						Ap[i + 1]++;
+						Ai.push_back(j);
+						A.push_back(-w);
+					}
+					j++;
+				}
+			}
+
+			i++;
+		}
+	}
+
+	cout << "Ap = [";
+	for (i = 0; i < Ap.size(); i++) {
+		cout << Ap[i] << " ";
+	}
+	cout << "]" << endl;
+	cout << "Ai = [";
+	for (i = 0; i < Ai.size(); i++) {
+		cout << Ai[i] << " ";
+	}
+	cout << "]" << endl;
+	cout << "A  = [";
+	for (i = 0; i < A.size(); i++) {
+		cout << A[i] << " ";
+	}
+	cout << "]" << endl;
+	cout << "bx = [";
+	for (i = 0; i < bx.size(); i++) {
+		cout << bx[i] << " ";
+	}
+	cout << "]" << endl;
+
+	cout << "by = [";
+	for (i = 0; i < by.size(); i++) {
+		cout << by[i] << " ";
+	}
+	cout << "]" << endl;
 }
 
 void drawscreen(){
