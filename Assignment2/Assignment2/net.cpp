@@ -38,8 +38,21 @@ void Net::buildConnections(){//std::list<Block> * blklst) {
 			}
 		}
 	}
+}
 
-
+int Net::HPWL(){
+	int xmin = 100;
+	int ymin = 100;
+	int xmax = 0;
+	int ymax = 0;
+	
+	for (auto& b:blocks){
+		if (b->getX() < xmin) xmin = b->getX();
+		if (b->getX() > xmax) xmax = b->getX();
+		if (b->getY() < ymin) ymin = b->getY();
+		if (b->getY() > ymax) ymax = b->getY();
+	}
+	return xmax + ymax - ymin - xmin;
 }
 
 void Net::placeNet() {

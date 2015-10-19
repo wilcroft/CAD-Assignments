@@ -169,12 +169,12 @@ void initialPlace(std::list<Block> * blocks) {
 		cout << bx[i] << " ";
 	}
 	cout << "]" << endl;
-
 	cout << "by = [";
 	for (i = 0; i < by.size(); i++) {
 		cout << by[i] << " ";
 	}
 	cout << "]" << endl;
+
 
 	void * Symbolic, * Numeric;
 
@@ -184,6 +184,34 @@ void initialPlace(std::list<Block> * blocks) {
 	(void)umfpack_di_solve(UMFPACK_A, Ap.data(), Ai.data(), A.data(), x.data(), bx.data(), Numeric, nullptr, nullptr);
 	(void)umfpack_di_solve(UMFPACK_A, Ap.data(), Ai.data(), A.data(), y.data(), by.data(), Numeric, nullptr, nullptr);
 	umfpack_di_free_numeric(&Numeric);
+	cout << "y = [";
+	for (i = 0; i < y.size(); i++) {
+		cout << y[i] << " ";
+	}
+	cout << "]" << endl;
+	cout << "x = [";
+	for (i = 0; i < x.size(); i++) {
+		cout << x[i] << " ";
+	}
+	cout << "]" << endl;
+
+    i=0;
+    for (auto& b:*blocks){
+        if (!b.isFixed()){
+            b.setX(bx[i]);
+            b.setY(by[i]);
+            i++;
+        }
+    }
+	
+}
+
+int wireusage (std::list<Net> * nets){
+    int sum = 0;
+    for(auto& n:*nets){
+        sum += n.HPWL();
+    }
+    return sum;
 }
 
 void drawscreen(){

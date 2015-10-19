@@ -24,6 +24,7 @@ int main(int argc, char** argv) {
 	}
 
 	initialPlace(&commonvars::allBlocks);
+    cout << "Used "<< wireusage(&commonvars::allNets) << " units of wiring. " << endl;
 
 	return 0;
 }

@@ -13,7 +13,8 @@
 #include "block.h"
 #include "net.h"
 
-#include "SuiteSparse\UMFPACK\Include\umfpack.h"
+//#include "SuiteSparse\UMFPACK\Include\umfpack.h"
+#include "umfpack.h"
 
 using std::string;
 using std::cout;
@@ -35,6 +36,7 @@ namespace commonvars{
 int parseInputFile(char * fname);
 
 void initialPlace(std::list<Block> * blocks);
+int wireusage (std::list<Net> * nets);
 
 void drawscreen();
 //std::list<Segment *> randomizeList(std::list<Segment *> l);

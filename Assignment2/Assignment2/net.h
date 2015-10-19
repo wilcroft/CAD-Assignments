@@ -23,6 +23,7 @@ public:
 
 	void buildBlockList(std::list<Block> * blklst);
 	void buildConnections();// std::list<Block> * blklst);
+	int HPWL ();
 	void print();
 	void placeNet();
 };
