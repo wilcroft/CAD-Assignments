@@ -102,15 +102,18 @@ int parseInputFile(char * fname){
 }
 
 void initialPlace(std::list<Block> * blocks) {
-	std::vector<float> bx;
-	std::vector<float> by;
+	std::vector<double> bx;
+	std::vector<double> by;
 	std::vector<int> Ap;
 	std::vector<int> Ai;
-	std::vector<float> A;
-	std::vector<float> x;
+	std::vector<double> A;
+	std::vector<double> x;
+	std::vector<double> y;
 
 	bx.resize(commonvars::numFreeBlocks);
 	by.resize(commonvars::numFreeBlocks);
+	x.resize(commonvars::numFreeBlocks);
+	y.resize(commonvars::numFreeBlocks);
 	Ap.resize(commonvars::numFreeBlocks+1);
 	Ap[0] = 0;
 
@@ -132,7 +135,7 @@ void initialPlace(std::list<Block> * blocks) {
 					by[i] += blki.getWeight(&blkj)*blkj.getY();
 				}
 				else {
-					float w = blki.getWeight(&blkj);
+					double w = blki.getWeight(&blkj);
 					if (w != 0) {
 						Ap[i + 1]++;
 						Ai.push_back(j);
@@ -172,6 +175,15 @@ void initialPlace(std::list<Block> * blocks) {
 		cout << by[i] << " ";
 	}
 	cout << "]" << endl;
+
+	void * Symbolic, * Numeric;
+
+	(void)umfpack_di_symbolic(commonvars::numFreeBlocks, commonvars::numFreeBlocks, Ap.data(), Ai.data(), A.data(), &Symbolic, nullptr, nullptr);
+	(void)umfpack_di_numeric(Ap.data(), Ai.data(), A.data(), Symbolic, &Numeric, nullptr, nullptr);
+	umfpack_di_free_symbolic(&Symbolic);
+	(void)umfpack_di_solve(UMFPACK_A, Ap.data(), Ai.data(), A.data(), x.data(), bx.data(), Numeric, nullptr, nullptr);
+	(void)umfpack_di_solve(UMFPACK_A, Ap.data(), Ai.data(), A.data(), y.data(), by.data(), Numeric, nullptr, nullptr);
+	umfpack_di_free_numeric(&Numeric);
 }
 
 void drawscreen(){

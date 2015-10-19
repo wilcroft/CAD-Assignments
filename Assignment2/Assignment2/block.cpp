@@ -58,23 +58,23 @@ void Block::setFixed(bool f) {
 }
 bool Block::isFixed() { return fixed; }
 
-void Block::addConnection(std::pair<Block *, float> c) {
+void Block::addConnection(std::pair<Block *, double> c) {
 	connections.push_back(c);
 }
-void Block::addConnection(Block * b, float w) {
+void Block::addConnection(Block * b, double w) {
 	connections.emplace_back(b, w);
 }
 
-float Block::getSumWeights() {
-	float sum = 0;
+double Block::getSumWeights() {
+	double sum = 0;
 	for (auto& x:connections){
 		sum += x.second;
 	}
 	return sum;
 }
 
-float Block::getWeight(Block * b) {
-	float sum = 0;
+double Block::getWeight(Block * b) {
+	double sum = 0;
 	for (auto& x : connections) {
 		if (x.first==b)
 			sum += x.second;

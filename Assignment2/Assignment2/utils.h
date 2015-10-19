@@ -13,6 +13,8 @@
 #include "block.h"
 #include "net.h"
 
+#include "SuiteSparse\UMFPACK\Include\umfpack.h"
+
 using std::string;
 using std::cout;
 using std::cerr;
