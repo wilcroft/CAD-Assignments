@@ -15,11 +15,13 @@ private:
 	int idx;
 	int x;
 	int y;
+	bool real;
 
 
 public:
 	Net();
 	Net(int i);
+	Net(int i, bool r);
 
 	void buildBlockList(std::list<Block> * blklst);
 	void buildConnections();// std::list<Block> * blklst);

@@ -1,12 +1,27 @@
 #include "utils.h"
 
 namespace commonvars{
-	int graphn, graphw;
-	t_bound_box initial_coords;
+	//int graphn, graphw;
+	//t_bound_box initial_coords;
 	int maxNetNum = 0;
 	int numFreeBlocks = 0;
 	std::list<Block> allBlocks;
 	std::list<Net> allNets;
+	std::vector<std::list<Block *>> blocksAt;
+	std::list<Block> tempRouting;
+}
+
+void commonvars::updateBlocksAt() {
+	blocksAt.clear();
+	blocksAt.resize(101 * 101);
+	for (auto& b : allBlocks) {
+		if (b.getX() != -1 && b.getY() != -1)
+			blocksAt[b.getX() * 101 + b.getY()].push_back(&b);
+	}
+}
+
+std::list<Block *> commonvars::getBlocksAt(int x, int y) {
+	return blocksAt[x * 101 + y];
 }
 
 int parseInputFile(char * fname){
@@ -149,31 +164,31 @@ void initialPlace(std::list<Block> * blocks) {
 		}
 	}
 
-	cout << "Ap = [";
-	for (i = 0; i < Ap.size(); i++) {
-		cout << Ap[i] << " ";
-	}
-	cout << "]" << endl;
-	cout << "Ai = [";
-	for (i = 0; i < Ai.size(); i++) {
-		cout << Ai[i] << " ";
-	}
-	cout << "]" << endl;
-	cout << "A  = [";
-	for (i = 0; i < A.size(); i++) {
-		cout << A[i] << " ";
-	}
-	cout << "]" << endl;
-	cout << "bx = [";
-	for (i = 0; i < bx.size(); i++) {
-		cout << bx[i] << " ";
-	}
-	cout << "]" << endl;
-	cout << "by = [";
-	for (i = 0; i < by.size(); i++) {
-		cout << by[i] << " ";
-	}
-	cout << "]" << endl;
+	//cout << "Ap = [";
+	//for (i = 0; i < Ap.size(); i++) {
+	//	cout << Ap[i] << " ";
+	//}
+	//cout << "]" << endl;
+	//cout << "Ai = [";
+	//for (i = 0; i < Ai.size(); i++) {
+	//	cout << Ai[i] << " ";
+	//}
+	//cout << "]" << endl;
+	//cout << "A  = [";
+	//for (i = 0; i < A.size(); i++) {
+	//	cout << A[i] << " ";
+	//}
+	//cout << "]" << endl;
+	//cout << "bx = [";
+	//for (i = 0; i < bx.size(); i++) {
+	//	cout << bx[i] << " ";
+	//}
+	//cout << "]" << endl;
+	//cout << "by = [";
+	//for (i = 0; i < by.size(); i++) {
+	//	cout << by[i] << " ";
+	//}
+	//cout << "]" << endl;
 
 
 	void * Symbolic, * Numeric;
@@ -184,26 +199,177 @@ void initialPlace(std::list<Block> * blocks) {
 	(void)umfpack_di_solve(UMFPACK_A, Ap.data(), Ai.data(), A.data(), x.data(), bx.data(), Numeric, nullptr, nullptr);
 	(void)umfpack_di_solve(UMFPACK_A, Ap.data(), Ai.data(), A.data(), y.data(), by.data(), Numeric, nullptr, nullptr);
 	umfpack_di_free_numeric(&Numeric);
-	cout << "y = [";
-	for (i = 0; i < y.size(); i++) {
-		cout << y[i] << " ";
-	}
-	cout << "]" << endl;
-	cout << "x = [";
-	for (i = 0; i < x.size(); i++) {
-		cout << x[i] << " ";
-	}
-	cout << "]" << endl;
+	//cout << "y = [";
+	//for (i = 0; i < y.size(); i++) {
+	//	cout << y[i] << " ";
+	//}
+	//cout << "]" << endl;
+	//cout << "x = [";
+	//for (i = 0; i < x.size(); i++) {
+	//	cout << x[i] << " ";
+	//}
+	//cout << "]" << endl;
 
     i=0;
     for (auto& b:*blocks){
         if (!b.isFixed()){
-            b.setX(bx[i]);
-            b.setY(by[i]);
+            b.setX(lrint(x[i]));
+            b.setY(lrint(y[i]));
             i++;
         }
     }
+	commonvars::updateBlocksAt();
 	
+}
+
+void simpleOverlap() {
+	int n = commonvars::numFreeBlocks;
+	int x = 0;
+	int y = 0;
+	int sum = 0;
+	std::list<Block *> blst;
+	std::list<int> ilst;
+	double virtualWeight = commonvars::maxNetNum * 1.0 /commonvars::allBlocks.size();
+
+	while (sum*1.0 / n < 0.5) {
+		for (int i = 0; i < 101; i++) {
+			blst = commonvars::getBlocksAt(x, i);
+			blst.remove_if(isFixed);
+			sum += blst.size();
+		}
+		x++;
+	}
+	sum = 0;
+	while (sum*1.0 / n < 0.5) {
+		for (int i = 0; i < 101; i++) {
+			blst = commonvars::getBlocksAt(i, y);
+			blst.remove_if(isFixed);
+			sum += blst.size();
+		}
+		y++;
+	}
+
+	cout << "x = " << x << "; y = " << y << endl;
+//Q1
+	blst.clear();
+
+	for (int i = 0; i < x; i++) {
+		for (int j = 0; j < y; j++) {
+			blst.splice(blst.end(), commonvars::getBlocksAt(i, j));
+		}
+	}
+	blst.remove_if(isFixed);
+	for (auto& b : blst) {
+		ilst.push_back(b->getBlockNum());
+	}
+	commonvars::allBlocks.emplace_back(commonvars::allBlocks.size() + 1, 25, 25, ilst, false);
+	commonvars::allBlocks.back().setFixed();
+	for (auto & b : blst) {
+		b->addConnection(&commonvars::allBlocks.back(), virtualWeight);
+	}
+//Q2
+	blst.clear();
+	ilst.clear();
+	for (int i = x; i < 101; i++) {
+		for (int j = 0; j < y; j++) {
+			blst.splice(blst.end(), commonvars::getBlocksAt(i, j));
+		}
+	}
+	blst.remove_if(isFixed);
+	for (auto& b : blst) {
+		ilst.push_back(b->getBlockNum());
+	}
+	commonvars::allBlocks.emplace_back(commonvars::allBlocks.size() + 1, 75, 25, ilst, false);
+	commonvars::allBlocks.back().setFixed();
+	for (auto & b : blst) {
+		b->addConnection(&commonvars::allBlocks.back(), virtualWeight);
+	}
+//Q3
+	blst.clear();
+	ilst.clear();
+	for (int i = 0; i < x; i++) {
+		for (int j = y; j < 101; j++) {
+			blst.splice(blst.end(), commonvars::getBlocksAt(i, j));
+		}
+	}
+	blst.remove_if(isFixed);
+	for (auto& b : blst) {
+		ilst.push_back(b->getBlockNum());
+	}
+	commonvars::allBlocks.emplace_back(commonvars::allBlocks.size() + 1, 25, 75, ilst, false);
+	commonvars::allBlocks.back().setFixed();
+	for (auto & b : blst) {
+		b->addConnection(&commonvars::allBlocks.back(), virtualWeight);
+	}
+//Q4
+	blst.clear();
+	ilst.clear();
+	for (int i = x; i < 101; i++) {
+		for (int j = y; j < 101; j++) {
+			blst.splice(blst.end(), commonvars::getBlocksAt(i, j));
+		}
+	}
+	blst.remove_if(isFixed);
+	for (auto& b : blst) {
+		ilst.push_back(b->getBlockNum());
+	}
+	commonvars::allBlocks.emplace_back(commonvars::allBlocks.size() + 1, 75, 75, ilst, false);
+	commonvars::allBlocks.back().setFixed();
+	for (auto & b : blst) {
+		b->addConnection(&commonvars::allBlocks.back(), virtualWeight);
+	}
+
+	initialPlace(&commonvars::allBlocks);
+
+}
+
+void doRandomSwaps(std::mt19937 * mt) {
+	std::vector<Block> fixedBlocks;
+	std::list<Block>& freeBlocks = commonvars::tempRouting;
+	std::list<Net> Nets;
+	int xt, yt;
+
+	commonvars::tempRouting.clear();
+
+	for (auto& b : commonvars::allBlocks) {
+		if (b.isFixed())
+			fixedBlocks.push_back(b);
+		else
+			freeBlocks.push_back(b);
+	}
+	
+	int numSwaps = fixedBlocks.size() / 6; //swap ~1/3 of IOs
+
+	std::uniform_int_distribution<> dt(0,fixedBlocks.size()-1); 
+
+	for (int i = 0; i < numSwaps; i++) {
+		int b1 = dt(*mt);
+		int b2;
+		do { b2 = dt(*mt); } while (b1 == b2);
+
+		xt = fixedBlocks[b1].getX();
+		yt = fixedBlocks[b1].getY();
+		fixedBlocks[b1].setX(fixedBlocks[b2].getX());
+		fixedBlocks[b1].setY(fixedBlocks[b2].getY());
+		fixedBlocks[b2].setX(xt);
+		fixedBlocks[b2].setY(yt);
+	}
+
+	std::copy(fixedBlocks.begin(), fixedBlocks.end(), std::back_inserter(freeBlocks));
+
+	for (int i = 1; i <= commonvars::maxNetNum; i++) {
+		Nets.emplace_back(i);
+		Nets.back().buildBlockList(&freeBlocks);
+		//		commonvars::allNets.back().print();
+	}
+	for (auto& x : Nets) {
+		x.buildConnections();// &commonvars::allBlocks);
+	}
+
+	initialPlace(&freeBlocks);
+
+	cout << "S:Used " << wireusage(&Nets) << " units" << endl;
+	//commonvars::tempRouting = freeBlocks;
 }
 
 int wireusage (std::list<Net> * nets){
@@ -216,6 +382,9 @@ int wireusage (std::list<Net> * nets){
 
 void drawscreen(){
 	//extern int chipn, chipw;
+	std::list<Block> * bks;
+	if (commonvars::tempRouting.size() != 0) bks = &commonvars::tempRouting;
+	else bks = &commonvars::allBlocks;
 	set_draw_mode(DRAW_NORMAL);
 	clearscreen();
 
@@ -224,6 +393,26 @@ void drawscreen(){
 
 	setcolor(LIGHTGREY);
 	
+	for (int i = 0; i <= 101; i++) {
+		drawline(i * 10, 0, i * 10, 1010);
+		drawline(0, i * 10, 1010, i * 10);
+	}
+
+	setcolor(RED);
+
+	for (auto& b : *(bks)) {
+		for (auto& bp : *(bks)) {
+			if (b.getWeight(&bp) != 0)
+				drawline(b.getX() * 10 + 5, b.getY() * 10 + 5, bp.getX() * 10 + 5, bp.getY() * 10 + 5);
+		}
+	}
+
+	setcolor(DARKSLATEBLUE);
+
+	for (auto& b : *(bks)) {
+		drawtext(b.getX() * 10+5, b.getY() * 10+5, std::to_string(b.getBlockNum()),150, FLT_MAX);
+
+	}
 	//int subsq = 2 * commonvars::graphw + 1;
 
 	//for (int i = 0; i < commonvars::graphn; i++){

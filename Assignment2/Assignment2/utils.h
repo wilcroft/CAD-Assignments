@@ -7,14 +7,15 @@
 
 #include <vector>
 #include <algorithm>
-#include <map>
+#include <iterator>
+
+#include <random>
 
 #include "graphics.h"
 #include "block.h"
 #include "net.h"
 
-//#include "SuiteSparse\UMFPACK\Include\umfpack.h"
-#include "umfpack.h"
+#include "SuiteSparse\UMFPACK\Include\umfpack.h"
 
 using std::string;
 using std::cout;
@@ -22,12 +23,16 @@ using std::cerr;
 using std::endl;
 
 namespace commonvars{
-	extern int graphn, graphw;
-	extern t_bound_box initial_coords;
+	//extern int graphn, graphw;
+	//extern t_bound_box initial_coords;
 	extern int maxNetNum;
 	extern int numFreeBlocks;
 	extern std::list<Block> allBlocks;
 	extern std::list<Net> allNets;
+	extern std::vector<std::list<Block *>> blocksAt;
+	extern std::list<Block> tempRouting;
+	void updateBlocksAt();
+	std::list<Block *> getBlocksAt(int x, int y);
 }
 
 //void popToFront(std::list<struct connections_t>* lst, std::list<struct connections_t>::iterator it);
@@ -36,8 +41,16 @@ namespace commonvars{
 int parseInputFile(char * fname);
 
 void initialPlace(std::list<Block> * blocks);
-int wireusage (std::list<Net> * nets);
+
+void simpleOverlap();
+
+void doRandomSwaps(std::mt19937 * mt);
+
+int wireusage(std::list<Net> * nets);
 
 void drawscreen();
+
+
+
 //std::list<Segment *> randomizeList(std::list<Segment *> l);
 

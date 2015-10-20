@@ -2,10 +2,16 @@
 
 Net::Net() {
 	idx = -1;
+	real = true;
 }
 
 Net::Net(int i) {
 	idx = i;
+	real = true;
+}
+Net::Net(int i, bool r) {
+	idx = i;
+	real = r;
 }
 
 void Net::buildBlockList(std::list<Block> * blklst) {
@@ -46,13 +52,16 @@ int Net::HPWL(){
 	int xmax = 0;
 	int ymax = 0;
 	
-	for (auto& b:blocks){
-		if (b->getX() < xmin) xmin = b->getX();
-		if (b->getX() > xmax) xmax = b->getX();
-		if (b->getY() < ymin) ymin = b->getY();
-		if (b->getY() > ymax) ymax = b->getY();
+	if (real) {
+		for (auto& b : blocks) {
+			if (b->getX() < xmin) xmin = b->getX();
+			if (b->getX() > xmax) xmax = b->getX();
+			if (b->getY() < ymin) ymin = b->getY();
+			if (b->getY() > ymax) ymax = b->getY();
+		}
+		return xmax + ymax - ymin - xmin;
 	}
-	return xmax + ymax - ymin - xmin;
+	else return 0;
 }
 
 void Net::placeNet() {

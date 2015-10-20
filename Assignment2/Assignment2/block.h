@@ -16,6 +16,7 @@ private:
 	int x;
 	int y;
 	bool fixed;
+	bool real;
 
 public:
 	Block();
@@ -23,6 +24,7 @@ public:
 	Block(int i, std::list<int> l);
 	Block(int i, int xx, int yy);
 	Block(int i, int xx, int yy, std::list<int> l);
+	Block(int i, int xx, int yy, std::list<int> l, bool r);
 	//~Block();
 
 	bool hasNet(int i);
@@ -42,6 +44,6 @@ public:
 
 };
 
-
+bool isFixed(Block * b);
 
 #endif

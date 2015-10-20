@@ -5,20 +5,22 @@ Block::Block() {
 	x = -1;
 	y = -1;
 	fixed = false;
+	real = true;
 }
 Block::Block(int i) {
 	num = i;
 	x = -1;
 	y = -1;
 	fixed = false;
-
-}
+	real = true;
+	}
 Block::Block(int i, std::list<int> l) {
 	num = i;
 	x = -1;
 	y = -1;
 	nets = l;
 	fixed = false;
+	real = true;
 
 }
 Block::Block(int i, int xx, int yy) {
@@ -26,6 +28,7 @@ Block::Block(int i, int xx, int yy) {
 	x = xx;
 	y = yy;
 	fixed = false;
+	real = true;
 
 }
 Block::Block(int i, int xx, int yy, std::list<int> l) {
@@ -34,6 +37,16 @@ Block::Block(int i, int xx, int yy, std::list<int> l) {
 	y = yy;
 	nets = l;
 	fixed = false;
+	real = true;
+
+}
+Block::Block(int i, int xx, int yy, std::list<int> l, bool r) {
+	num = i;
+	x = xx;
+	y = yy;
+	nets = l;
+	fixed = false;
+	real = r;
 
 }
 
@@ -92,3 +105,6 @@ void Block::print() {
 		cout << ")" << endl;
 	}
 }
+
+
+bool isFixed(Block * b) { return b->isFixed(); }
