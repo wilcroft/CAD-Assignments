@@ -53,11 +53,14 @@ int main(int argc, char** argv) {
 
 	simpleOverlap();
 
+	cout << "Used " << wireusage(&commonvars::allNets) << " units of wiring. (basic spread)" << endl;
+
 	event_loop(NULL, NULL, NULL, drawscreen);
 
 	recurseRemoveOverlap(&commonvars::allBlocks, 2);
 
-	cout << "Used " << wireusage(&commonvars::allNets) << " units of wiring. (spread)" << endl;
+	cout << "Used " << wireusage(&commonvars::allNets) << " units of wiring. (full spread)" << endl;
 
+	event_loop(NULL, NULL, NULL, drawscreen);
 	return 0;
 }
