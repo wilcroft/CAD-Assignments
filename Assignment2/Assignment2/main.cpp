@@ -56,5 +56,9 @@ int main(int argc, char** argv) {
  
 	event_loop(NULL, NULL, NULL, drawscreen);
 
+	recurseRemoveOverlap(&commonvars::allBlocks, 2);
+
+	cout << "Used " << wireusage(&commonvars::allNets) << " units of wiring. (spread)" << endl;
+
 	return 0;
 }

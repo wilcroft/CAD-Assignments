@@ -36,8 +36,10 @@ public:
 	int getBlockNum();
 	void setFixed(bool f=true);
 	bool isFixed();
+	bool isReal();
 	void addConnection(std::pair<Block *, double> c);
 	void addConnection(Block * b, double w);
+	void deleteConnection(Block * b);
 	double getSumWeights();
 	double getWeight(Block * b);
 	void print();

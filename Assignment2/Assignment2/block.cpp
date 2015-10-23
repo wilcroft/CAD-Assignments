@@ -70,12 +70,23 @@ void Block::setFixed(bool f) {
 	fixed = f;
 }
 bool Block::isFixed() { return fixed; }
+bool Block::isReal() { return real; }
 
 void Block::addConnection(std::pair<Block *, double> c) {
 	connections.push_back(c);
 }
 void Block::addConnection(Block * b, double w) {
 	connections.emplace_back(b, w);
+}
+void Block::deleteConnection(Block * b) {
+	std::list<std::pair<Block*, double>>::iterator it = connections.begin();
+	while (it != connections.end()) {
+		if (it->first == b) {
+			connections.erase(it);
+			it = connections.begin();
+		}
+		else it++;
+	}
 }
 
 double Block::getSumWeights() {
