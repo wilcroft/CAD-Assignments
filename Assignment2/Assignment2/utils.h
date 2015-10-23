@@ -10,12 +10,13 @@
 #include <iterator>
 
 #include <random>
+#include <cfloat>
 
 #include "graphics.h"
 #include "block.h"
 #include "net.h"
 
-#include "SuiteSparse\UMFPACK\Include\umfpack.h"
+#include "SuiteSparse/UMFPACK/Include/umfpack.h"
 
 using std::string;
 using std::cout;
