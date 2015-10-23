@@ -21,6 +21,15 @@ void commonvars::updateBlocksAt() {
 std::list<Block *> commonvars::getBlocksAt(int x, int y) {
 	return blocksAt[x * 101 + y];
 }
+std::list<Block *> commonvars::getFreeBlocksAt(int x, int y) {
+	std::list <Block *> ret;
+	for (auto & b : blocksAt[x * 101 + y]) {
+		if (!b->isFixed()) {
+			ret.push_back(b);
+		}
+	}
+	return ret;
+}
 
 int parseInputFile(char * fname){
 	std::ifstream fs(fname);
@@ -394,7 +403,7 @@ void removeVirtualBlocks(std::list<Block> * blocks) {
 }
 
 void removeFixedBlocks(std::list<Block *> * blocks) {
-    std::list<Block*> &bks = *blocks;
+    //std::list<Block*> &bks = *blocks;
     if (blocks->size() !=0){
         std::list<Block*>::iterator it = blocks->begin();
         while (blocks->size() != 0 && it != blocks->end()){
@@ -442,9 +451,9 @@ void recurseRemoveOverlap(std::list<Block> * blocks, int i) {
 
 	for (x = 0; x <= 100; x++) {
 		for (y = 0; y <= 100; y++) {
-			templst = commonvars::getBlocksAt(x, y);
+			templst = commonvars::getFreeBlocksAt(x, y);
 			//templst.remove_if(isFixed);
-			removeFixedBlocks(&templst);
+			//removeFixedBlocks(&templst);
 			sum += templst.size();
 		}
 		if (sum >= commonvars::numFreeBlocks*(j + 1) / n) {

@@ -34,6 +34,7 @@ namespace commonvars{
 	extern std::list<Block> tempRouting;
 	void updateBlocksAt();
 	std::list<Block *> getBlocksAt(int x, int y);
+	std::list<Block *> getFreeBlocksAt(int x, int y);
 }
 
 //void popToFront(std::list<struct connections_t>* lst, std::list<struct connections_t>::iterator it);
