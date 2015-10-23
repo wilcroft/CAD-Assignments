@@ -48,7 +48,12 @@ void doRandomSwaps(std::mt19937 * mt);
 
 int wireusage(std::list<Net> * nets);
 
+void removeVirtualBlocks(std::list<Block> * blocks);
+
+void recurseRemoveOverlap(std::list<Block> * blocks, int i);
+
 void drawscreen();
+
 
 
 

@@ -380,6 +380,94 @@ int wireusage (std::list<Net> * nets){
     return sum;
 }
 
+void removeVirtualBlocks(std::list<Block> * blocks) {
+	std::list<Block>::iterator it;
+	for (it = blocks->begin(); it != blocks->end(); it++) {
+		if (!it->isReal()){
+			for (auto& b : *blocks) {
+				b.deleteConnection(&(*it));
+			}
+			std::list<Block>::iterator temp = it;
+			it--;
+			blocks->erase(temp);
+		}
+	}
+
+}
+
+void recurseRemoveOverlap(std::list<Block> * blocks, int i) {
+	removeVirtualBlocks(blocks);
+	const int n = 1 << i;
+	double virtualWeight = commonvars::maxNetNum * 1.0 / commonvars::allBlocks.size();
+
+	std::vector<std::list<Block*>> blocksInRegion;
+	std::list<Block *> templst;
+	blocksInRegion.resize(n*n);
+
+	std::vector<int> xp;
+	std::vector<int> yp;
+	xp.resize(n);
+	yp.resize(n);
+
+	int sum = 0;
+	int j = 0, k=0;
+	int x, y;
+
+	for (x = 0; x <= 100; x++) {
+		for (y = 0; y <= 100; y++) {
+			templst = commonvars::getBlocksAt(x, y);
+			templst.remove_if(isFixed);
+			sum += templst.size();
+		}
+		if (sum >= commonvars::numFreeBlocks*(j + 1) / n) {
+			xp[j] = x;
+			j++;
+		}
+	}
+	j = 0;
+	sum = 0;
+	for (y = 0; y <= 100; y++) {
+		for (x = 0; x <= 100; x++) {
+			templst = commonvars::getBlocksAt(x, y);
+			templst.remove_if(isFixed);
+			sum += templst.size();
+		}
+		if (sum >= commonvars::numFreeBlocks*(j + 1) / n) {
+			yp[j] = y;
+			j++;
+		}
+	}
+	j = 0;
+
+	for (x = 0; x <= 100; x++) {
+		while (x > xp[j]) j++;
+		k = 0;
+		for (y = 0; y <= 100; y++) {
+			while (y > yp[k]) k++;
+			blocksInRegion[j*n + k].splice(blocksInRegion[j*n + k].end(), commonvars::getBlocksAt(x, y));
+		}
+	}
+	
+	sum = 0;
+	for (x = 0; x < n; x++) {
+		for (y = 0; y < n; y++) {
+			blocksInRegion[x*n + y].remove_if(isFixed);
+			if (blocksInRegion[x*n + y].size()>2) sum += blocksInRegion[x*n + y].size() - 2;
+			std::list<int> u;
+			commonvars::allBlocks.emplace_back(commonvars::allBlocks.size() + 1, (100 * x + 50) / n, (100 * y + 50) / n, u, false);
+			for (auto& b : blocksInRegion[x*n + y]) {
+				b->addConnection(&commonvars::allBlocks.back(), virtualWeight);
+			}
+		}
+	}
+
+	initialPlace(blocks);
+
+	event_loop(NULL, NULL, NULL, drawscreen);
+
+	if (sum*1.0/commonvars::numFreeBlocks > 0.15)	recurseRemoveOverlap(blocks, i+1);
+}
+
 void drawscreen(){
 	//extern int chipn, chipw;
 	std::list<Block> * bks;
