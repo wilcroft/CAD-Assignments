@@ -393,6 +393,22 @@ void removeVirtualBlocks(std::list<Block> * blocks) {
 
 }
 
+void removeFixedBlocks(std::list<Block *> * blocks) {
+	if (blocks->size() != 0) {
+		std::list<Block *>::iterator it;
+		for (it = blocks->begin(); it != blocks->end(); ) {
+			if ((*it)->isFixed()) {
+				std::list<Block *>::iterator temp = it;
+				if (it == blocks->begin()) it++;
+				else it--;
+				blocks->erase(temp);
+			}
+			if (blocks->size() != 0) it++;
+		}
+	}
+
+}
+
 void recurseRemoveOverlap(std::list<Block> * blocks, int i) {
 	removeVirtualBlocks(blocks);
 	const int n = 1 << i;
@@ -414,7 +430,8 @@ void recurseRemoveOverlap(std::list<Block> * blocks, int i) {
 	for (x = 0; x <= 100; x++) {
 		for (y = 0; y <= 100; y++) {
 			templst = commonvars::getBlocksAt(x, y);
-			templst.remove_if(isFixed);
+			//templst.remove_if(isFixed);
+			removeFixedBlocks(&templst);
 			sum += templst.size();
 		}
 		if (sum >= commonvars::numFreeBlocks*(j + 1) / n) {
@@ -427,7 +444,8 @@ void recurseRemoveOverlap(std::list<Block> * blocks, int i) {
 	for (y = 0; y <= 100; y++) {
 		for (x = 0; x <= 100; x++) {
 			templst = commonvars::getBlocksAt(x, y);
-			templst.remove_if(isFixed);
+			//templst.remove_if(isFixed);
+			removeFixedBlocks(&templst);
 			sum += templst.size();
 		}
 		if (sum >= commonvars::numFreeBlocks*(j + 1) / n) {
