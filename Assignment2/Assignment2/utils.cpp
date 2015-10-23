@@ -1,8 +1,6 @@
 #include "utils.h"
 
 namespace commonvars{
-	//int graphn, graphw;
-	//t_bound_box initial_coords;
 	int maxNetNum = 0;
 	int numFreeBlocks = 0;
 	std::list<Block> allBlocks;
@@ -398,7 +396,7 @@ void removeVirtualBlocks(std::list<Block> * blocks) {
 void recurseRemoveOverlap(std::list<Block> * blocks, int i) {
 	removeVirtualBlocks(blocks);
 	const int n = 1 << i;
-	double virtualWeight = commonvars::maxNetNum * 1.0 / commonvars::allBlocks.size();
+	double virtualWeight = commonvars::maxNetNum * 2.0 / commonvars::allBlocks.size();
 
 	std::vector<std::list<Block*>> blocksInRegion;
 	std::list<Block *> templst;
@@ -440,10 +438,10 @@ void recurseRemoveOverlap(std::list<Block> * blocks, int i) {
 	j = 0;
 
 	for (x = 0; x <= 100; x++) {
-		while (x > xp[j]) j++;
+		if (x > xp[j] && j < n-1) j++;
 		k = 0;
 		for (y = 0; y <= 100; y++) {
-			while (y > yp[k]) k++;
+			if (y > yp[k] && k < n - 1) k++;
 			blocksInRegion[j*n + k].splice(blocksInRegion[j*n + k].end(), commonvars::getBlocksAt(x, y));
 		}
 	}
@@ -455,6 +453,7 @@ void recurseRemoveOverlap(std::list<Block> * blocks, int i) {
 			if (blocksInRegion[x*n + y].size()>2) sum += blocksInRegion[x*n + y].size() - 2;
 			std::list<int> u;
 			commonvars::allBlocks.emplace_back(commonvars::allBlocks.size() + 1, (100 * x + 50) / n, (100 * y + 50) / n, u, false);
+			commonvars::allBlocks.back().setFixed();
 			for (auto& b : blocksInRegion[x*n + y]) {
 				b->addConnection(&commonvars::allBlocks.back(), virtualWeight);
 			}
@@ -463,7 +462,7 @@ void recurseRemoveOverlap(std::list<Block> * blocks, int i) {
 
 	initialPlace(blocks);
 
-	event_loop(NULL, NULL, NULL, drawscreen);
+//	event_loop(NULL, NULL, NULL, drawscreen);
 
 	if (sum*1.0/commonvars::numFreeBlocks > 0.15)	recurseRemoveOverlap(blocks, i+1);
 }
@@ -489,81 +488,23 @@ void drawscreen(){
 	setcolor(RED);
 
 	for (auto& b : *(bks)) {
-		for (auto& bp : *(bks)) {
-			if (b.getWeight(&bp) != 0)
-				drawline(b.getX() * 10 + 5, b.getY() * 10 + 5, bp.getX() * 10 + 5, bp.getY() * 10 + 5);
-		}
+		if (b.isReal())
+			for (auto& bp : *(bks)) {
+				if (b.getWeight(&bp) != 0) {
+					if (!bp.isReal()) setcolor(ORANGE);
+					else setcolor(RED);
+					drawline(b.getX() * 10 + 5, b.getY() * 10 + 5, bp.getX() * 10 + 5, bp.getY() * 10 + 5);
+				}
+			}
 	}
 
 	setcolor(DARKSLATEBLUE);
 
 	for (auto& b : *(bks)) {
-		drawtext(b.getX() * 10+5, b.getY() * 10+5, std::to_string(b.getBlockNum()),150, FLT_MAX);
+		if (b.isReal())
+			drawtext(b.getX() * 10+5, b.getY() * 10+5, std::to_string(b.getBlockNum()),150, FLT_MAX);
 
 	}
-	//int subsq = 2 * commonvars::graphw + 1;
-
-	//for (int i = 0; i < commonvars::graphn; i++){
-	//	for (int j = 0; j < commonvars::graphn + 1; j++){
-	//		for (int k = 0; k < commonvars::graphw; k++){
-	//			//Draw the wires
-	//			setcolor(LIGHTGREY);
-	//			//drawline(subsq*j * 2 + 2 * k + 1, (i + 1) * 2 * subsq - 1, subsq*j * 2 + 2 * k + 1, (2 * i + 1)*subsq);
-	//			//drawline( (i + 1) * 2 * subsq - 1,subsq*j * 2 + 2 * k + 1, (2 * i + 1)*subsq, subsq*j * 2 + 2 * k + 1);
-	//			drawWireSegment(true, i, j, k, LIGHTGREY);
-	//			drawWireSegment(false, j, i, k, LIGHTGREY);
-	//		}
-	//	}
-	//	for (int j = 0; j < commonvars::graphn; j++){
-	//		//Draw the logic blocks
-	//		setcolor(DARKGREY);
-	//		fillrect((2 * i + 1)*subsq, (2 * j + 1)*subsq, 2 *(i+1)*subsq - 1, 2 *(j+1)*subsq - 1);
-	//		for (int k = 1; k < 5; k++){
-	//			pin p = std::make_tuple(i, j, k);
-	//			bool ok = p == std::make_tuple(0, 2, 4);
-	//			for (int w = 0; w < commonvars::graphw; w++){
-	//				if (commonvars::routing->segmentAt(p, w)->getSource() == p)
-	//					drawPinToWire(p, w);
-	//				if (commonvars::routing->segmentAt(p, w)->getDest() == p)
-	//					drawPinToWire(p, w, commonvars::colormap[commonvars::routing->segmentAt(p, w)->getSource()]);
-	//					
-	//			}
-	//		}
-	//	}
-	//}
+	
 }
 
-/*
-std::list<Segment *> randomizeList(std::list<Segment *> l){
-	std::list<Segment *> newl;
-	std::vector<Segment *> v;
-	for(std::list<Segment *>::iterator iter = l.begin(); iter!= l.end(); iter++){
-		v.push_back(*iter);
-	}
-	std::random_shuffle(v.begin(), v.end());
-	for (int i=0; i<v.size(); i++)
-		newl.push_back(v[i]);
-
-	return newl;
-
-}
-
-
-void popToFront(std::list<struct connections_t>* lst, std::list<struct connections_t>::iterator it) {
-	struct connections_t temp;
-
-	temp = *(it);
-	lst->erase(it);
-	lst->push_front(temp);
-
-}
-
-void popToFront(std::list<Connection>* lst, std::list<Connection>::iterator it) {
-	Connection temp;
-
-	temp = *(it);
-	lst->erase(it);
-	lst->push_front(temp);
-
-}
-*/
