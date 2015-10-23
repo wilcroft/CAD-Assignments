@@ -394,10 +394,23 @@ void removeVirtualBlocks(std::list<Block> * blocks) {
 }
 
 void removeFixedBlocks(std::list<Block *> * blocks) {
+    std::list<Block*> &bks = *blocks;
+    if (blocks->size() !=0){
+        std::list<Block*>::iterator it = blocks->begin();
+        while (blocks->size() != 0 && it != blocks->end()){
+            if ((*it)->isFixed()){
+                blocks->erase(it);
+                it = blocks->begin();
+            }
+            else it++;
+        }
+    }
+}
+/*
 	if (blocks->size() != 0) {
 		std::list<Block *>::iterator it;
 		for (it = blocks->begin(); it != blocks->end(); ) {
-			if ((*it)->isFixed()) {
+			if (it != nullptr && (it)->isFixed()) {
 				std::list<Block *>::iterator temp = it;
 				if (it == blocks->begin()) it++;
 				else it--;
@@ -407,7 +420,7 @@ void removeFixedBlocks(std::list<Block *> * blocks) {
 		}
 	}
 
-}
+}*/
 
 void recurseRemoveOverlap(std::list<Block> * blocks, int i) {
 	removeVirtualBlocks(blocks);
