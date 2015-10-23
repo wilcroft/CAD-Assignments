@@ -52,7 +52,8 @@ int main(int argc, char** argv) {
 	event_loop(NULL, NULL, NULL, drawscreen);
 
 	simpleOverlap();
-
+    cout << "O:Used "<< wireusage(&commonvars::allNets) << " units of wiring. " << endl;
+ 
 	event_loop(NULL, NULL, NULL, drawscreen);
 
 	return 0;
