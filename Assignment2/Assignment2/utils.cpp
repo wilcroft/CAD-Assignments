@@ -25,7 +25,7 @@ std::list<Block *> commonvars::getFreeBlocksAt(int x, int y) {
 	std::list <Block *> ret;
 	for (auto & b : blocksAt[x * 101 + y]) {
 		if (!b->isFixed()) {
-			ret.push_back(b);
+			ret.emplace_back(b);
 		}
 	}
 	return ret;
@@ -395,8 +395,8 @@ void removeVirtualBlocks(std::list<Block> * blocks) {
 				b.deleteConnection(&(*it));
 			}
 			std::list<Block>::iterator temp = it;
-			it--;
 			blocks->erase(temp);
+			it = blocks->begin();
 		}
 	}
 
@@ -531,7 +531,7 @@ void drawscreen(){
 		if (b.isReal())
 			for (auto& bp : *(bks)) {
 				if (b.getWeight(&bp) != 0) {
-					if (!bp.isReal()) setcolor(ORANGE);
+					if (!bp.isReal()) setcolor(LIMEGREEN);
 					else setcolor(RED);
 					drawline(b.getX() * 10 + 5, b.getY() * 10 + 5, bp.getX() * 10 + 5, bp.getY() * 10 + 5);
 				}

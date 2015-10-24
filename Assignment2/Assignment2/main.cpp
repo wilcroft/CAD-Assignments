@@ -57,10 +57,12 @@ int main(int argc, char** argv) {
 
 	event_loop(NULL, NULL, NULL, drawscreen);
 
+#if DO_FULL_SPREADING
 	recurseRemoveOverlap(&commonvars::allBlocks, 2);
 
 	cout << "Used " << wireusage(&commonvars::allNets) << " units of wiring. (full spread)" << endl;
 
 	event_loop(NULL, NULL, NULL, drawscreen);
+#endif
 	return 0;
 }

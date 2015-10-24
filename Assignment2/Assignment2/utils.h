@@ -1,4 +1,7 @@
 #pragma once
+
+#define DO_FULL_SPREADING 1
+
 #include <iostream>
 #include <fstream>
 #include <string>
