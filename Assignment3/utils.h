@@ -6,8 +6,11 @@
 #include <stdexcept>
 #include <vector>
 #include <list>
+#include <cfloat>
 
 #include "block.h"
+#include "tree.h"
+#include "graphics.h"
 
 using std::string;
 using std::cout;
@@ -18,6 +21,8 @@ using std::endl;
 int parseInputFile(char * fname);
 std::list <Block *> getOrderedList(std::vector<Block> &b);
 void doBandB(std::vector<Block> &blocks);
+void exploreTree(std::list<Block*> &blocks, std::list<Block*>::iterator it, int currCost, int& bestCost, int lcount, int rcount, const int maxcount, Tree * treenode);
+int initialCost(Block * b, int maxcount);
 /*
 #define DO_FULL_SPREADING 1
 
@@ -77,6 +82,7 @@ void removeFixedBlocks(std::list<Block *> * blocks);
 void recurseRemoveOverlap(std::list<Block> * blocks, int i);
 */
 void drawscreen();
+void drawTree(Tree * ptr, int x, int y, int i, int dy);
 
 
 

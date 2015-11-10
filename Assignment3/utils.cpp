@@ -4,6 +4,9 @@
 namespace utils {
 	std::vector<Block> allBlocks;
 	std::vector<std::list<int>> netlist;
+	Tree * bbTree;
+	std::vector<Net> nets;
+	int nodecount = 0;
 }
 
 int parseInputFile(char * fname) {
@@ -45,9 +48,13 @@ int parseInputFile(char * fname) {
 					return -1;
 				}
 				temp.erase(0, idx);
+				if (tempint > (signed int)utils::nets.size())
+					utils::nets.resize(tempint);
+				if (tempint != -1)
+					utils::allBlocks[blocknum - 1].addNet(tempint - 1);
 				if (tempint > (signed int)utils::netlist.size())
 					utils::netlist.resize(tempint);
-				if (tempint != -1) 
+				if (tempint != -1)
 					utils::netlist[tempint - 1].push_back(blocknum - 1);
 			} while (tempint != -1);
 		}
@@ -78,7 +85,7 @@ std::list <Block *> getOrderedList(std::vector<Block> &b) {
 		bp.push_back(&x);
 	}
 
-	bp.sort(Block::blockgreater);
+	bp.sort(blockgreater);
 
 	int i = 0;
 	for (auto&x : bp) {
@@ -91,23 +98,130 @@ std::list <Block *> getOrderedList(std::vector<Block> &b) {
 void doBandB(std::vector<Block> &blocks) {
 	std::list<Block *> queue = getOrderedList(blocks);
 	unsigned int count = ceil(blocks.size()/2.0);
+	unsigned int lcount = 0, rcount = 0;
 
 	int bestCost;
-
+	
 	//Get inital "best cost"
+	bestCost = initialCost(*queue.begin(), count);
+	cout << "Initial Cost: " << bestCost << endl;
 
-	unsigned int lcount = 0, rcount = 0;
-	std::list<Block*>::iterator it;
+	utils::bbTree = new Tree();
+	std::list<Block*>::iterator it = queue.begin();
 	(*it)->setLeft();
 	lcount++;
 	it++;
-	exploreTree(queue, it, 0, bestCost, lcount, rcount, count);
+	exploreTree(queue, it, 0, bestCost, lcount, rcount, count, utils::bbTree);
 
+	cout << "Best Cost: " << bestCost << endl;
+	cout << "Node Count " << utils::nodecount << endl;
 
 }
-void exploreTree(std::list<Block*> &blocks, std::list<Block*>::iterator it, int currCost, int& bestCost, int lcount, int rcount, const int maxcount) {
-	
 
+void exploreTree(std::list<Block*> &blocks, std::list<Block*>::iterator it, int currCost, int& bestCost, int lcount, int rcount, const int maxcount, Tree * treenode) {
+	std::list<Block *>::iterator tempit;
+
+	int newcost;
+
+	if (lcount > maxcount)
+		return;
+	if (rcount > maxcount) 
+		return;
+	if (currCost > bestCost) return;
+	if (it == blocks.end() && currCost < bestCost) {
+		bestCost = currCost;
+		return;
+	}
+	Block * bcurr = *it;
+	newcost = currCost + (bcurr)->cutCost(LEFTSIDE);
+	if (newcost<bestCost) {
+		(bcurr)->setLeft();
+		cout << "Block " << bcurr->getBnum() + 1 << " Left: Current Cost = " << newcost << endl;
+		it++;
+		utils::nodecount++;
+		exploreTree(blocks, it, newcost, bestCost, lcount + 1, rcount, maxcount, treenode->addLeft(newcost));
+		it--;
+		(bcurr)->setNoSide();
+	}
+	newcost = currCost + (bcurr)->cutCost(RIGHTSIDE);
+	if (newcost<bestCost) {
+		(bcurr)->setRight();
+		cout << "Block " << bcurr->getBnum() + 1 << " Right: Current Cost = " << newcost << endl;
+		it++;
+		utils::nodecount++;
+		exploreTree(blocks, it, newcost, bestCost, lcount, rcount+1, maxcount, treenode->addRight(newcost));
+		it--;
+		(bcurr)->setNoSide();
+	}
+	
+	return;
+
+}
+
+int initialCost(Block * b, int maxcount) {
+	std::vector<int> blocks;
+	std::vector<int> temp;
+	int i = 0;
+	int cost = 0;
+
+	blocks.push_back(b->getBnum());
+	b->setLeft();
+	temp = b->getConnections();
+	blocks.insert(blocks.end(), temp.begin(), temp.end());
+	i++;
+	while (i < maxcount) {
+		if (utils::allBlocks[blocks[i]].isLeft()) {
+			blocks.erase(blocks.begin() + i);
+		}
+		else {
+			temp.clear();
+			utils::allBlocks[blocks[i]].setLeft();
+			temp = utils::allBlocks[blocks[i]].getConnections();
+			blocks.insert(blocks.end(), temp.begin(), temp.end());
+			i++;
+		}
+	}
+	for (auto& x : utils::allBlocks) {
+		if (!x.isLeft()) x.setRight();
+	}
+
+	for (auto& x : utils::nets) {
+		if (x.isCrossing()) cost++;
+	}
+
+	for (auto&x:utils::allBlocks) {
+		x.setNoSide();
+	}
+
+	return cost;
+
+}
+
+void drawscreen() {
+	int x = 10 * (1 << utils::allBlocks.size());
+	int y = 20 * (1 << utils::allBlocks.size()) -5;
+	int dy = 20 * (1 << utils::allBlocks.size()) / utils::allBlocks.size();
+
+	Tree * ptr = utils::bbTree;
+	drawTree(ptr, x, y, utils::allBlocks.size()-1,dy);
+
+}
+
+void drawTree(Tree * ptr, int x, int y, int i, int dy) {
+	i--;
+	cout << "(" << x << ", " << y << ", " << i << ")" << endl;
+	setcolor(BLACK);
+	drawtext(x, y, std::to_string(ptr->getValue()), FLT_MAX, 20);
+	if (ptr->left() != nullptr) {
+		setcolor(RED);
+		drawline(x, y, x - 20*(1 << i), y - dy);
+		drawTree(ptr->left(), x - 20 * (1 << i), y - dy, i, dy);
+	}
+	if (ptr->right() != nullptr) {
+		setcolor(RED);
+		drawline(x, y, x + 20 * (1 << i), y - dy);
+		drawTree(ptr->right(), x + 20 * (1 << i), y - dy, i, dy);
+	}
 }
 /*
 namespace commonvars{

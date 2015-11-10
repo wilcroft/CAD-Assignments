@@ -17,7 +17,7 @@ enum blockside {
 
 class Block {
 private:
-	//std::list<int> nets;
+	std::list<int> nets;
 	std::vector<int> connections;
 	enum blockside side;
 	int index;
@@ -30,9 +30,12 @@ public:
 	bool operator> (const Block&);
 	bool operator== (const Block&);
 
+	void addNet(int i);
+
 	void addConnection(int i);
 	void printConnections();
 	void sortConnections();
+	 std::vector<int>  getConnections();
 	bool isLeft();
 	bool isRight();
 	void setLeft();
@@ -44,8 +47,9 @@ public:
 	void setBnum(int i);
 	int getBnum();
 
-	int cutCost(int b);
+	int cutCost(enum blockside b);
 	bool oppositeSide(Block &b);
 
-	bool blockgreater(const Block*  &a, const Block* &b);
+	
 };
+bool blockgreater( Block*  &a,  Block* &b);

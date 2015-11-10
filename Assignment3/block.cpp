@@ -11,8 +11,10 @@ Block::Block(int i) {
 	bnum = i;
 }
 
-bool Block::blockgreater(const Block*  &a, const Block* &b) {
-	if (a->connections.size() > b->connections.size()) return true;
+bool blockgreater(Block*  &a, Block* &b) {
+	int asize = a->getConnections().size();
+	int bsize = b->getConnections().size();
+	if (asize > bsize) return true;
 	else return false;
 }
 
@@ -29,6 +31,10 @@ bool Block::operator==(const Block& b) {
 	else return false;
 }
 
+void Block::addNet(int i) {
+	nets.push_back(i);
+}
+
 void Block::addConnection(int i) {
 	connections.push_back(i);
 }
@@ -39,7 +45,11 @@ void Block::printConnections() {
 }
 void Block::sortConnections() {
 	std::sort(connections.begin(), connections.end());
+	std::unique(connections.begin(), connections.end());
 }
+
+ std::vector<int>  Block::getConnections() { return connections; }
+
 bool Block::isLeft() {
 	return side==LEFTSIDE;
 }
@@ -47,12 +57,25 @@ bool Block::isRight() {
 	return side==RIGHTSIDE;
 }
 void Block::setLeft() {
-	side=LEFTSIDE;
+	if (side != LEFTSIDE) {
+		for (auto& x : nets) {
+			if (side == RIGHTSIDE) utils::nets[x].removeRight(bnum);
+			utils::nets[x].addLeft(bnum);
+		}
+		side = LEFTSIDE;
+	}
 }
 void Block::setRight() {
-	side=RIGHTSIDE;
+	if (side != RIGHTSIDE) {
+		for (auto& x : nets) {
+			if (side == LEFTSIDE) utils::nets[x].removeLeft(bnum);
+			utils::nets[x].addRight(bnum);
+		}
+		side = RIGHTSIDE;
+	}
 }
 void Block::setNoSide() {
+	for (auto& x : nets) utils::nets[x].remove(bnum);
 	side = NONE;
 }
 
@@ -62,13 +85,14 @@ void Block::setBnum(int i) { bnum = i; }
 int Block::getBnum() { return bnum; }
 
 
-int Block::cutCost(int b) {
-	int count = 0;
-	for (unsigned int i; i < connections.size(); i++) {
-		if (connections[i] == b && oppositeSide(utils::allBlocks[b])) count++;
+int Block::cutCost(enum blockside b) {
+	int cost = 0;
+	for (auto &x :nets) {
+		if (utils::nets[x].willCross(b)) cost++;
 	}
-	return count;
+	return cost;
 }
+
 bool Block::oppositeSide(Block &b) {
 	if (side == LEFTSIDE && b.isRight()) return true;
 	if (side == RIGHTSIDE && b.isLeft()) return true;
