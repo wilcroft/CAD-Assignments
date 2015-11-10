@@ -198,6 +198,11 @@ int initialCost(Block * b, int maxcount) {
 }
 
 void drawscreen() {
+    set_draw_mode(DRAW_NORMAL);
+    clearscreen();
+    setlinestyle(SOLID);
+    setlinewidth(1);
+
 	int x = 10 * (1 << utils::allBlocks.size());
 	int y = 20 * (1 << utils::allBlocks.size()) -5;
 	int dy = 20 * (1 << utils::allBlocks.size()) / utils::allBlocks.size();
@@ -211,7 +216,6 @@ void drawTree(Tree * ptr, int x, int y, int i, int dy) {
 	i--;
 	cout << "(" << x << ", " << y << ", " << i << ")" << endl;
 	setcolor(BLACK);
-	drawtext(x, y, std::to_string(ptr->getValue()), FLT_MAX, 20);
 	if (ptr->left() != nullptr) {
 		setcolor(RED);
 		drawline(x, y, x - 20*(1 << i), y - dy);
@@ -222,6 +226,7 @@ void drawTree(Tree * ptr, int x, int y, int i, int dy) {
 		drawline(x, y, x + 20 * (1 << i), y - dy);
 		drawTree(ptr->right(), x + 20 * (1 << i), y - dy, i, dy);
 	}
+	drawtext(x, y, std::to_string(ptr->getValue()), 150, FLT_MAX);
 }
 /*
 namespace commonvars{

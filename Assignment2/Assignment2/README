@@ -1,0 +1,11 @@
+ECE1387 Assignment 2 - Placement
+
+To compile the program, run "make".
+To run the program, run ./assignment2 <cct name> [-swap <n>]
+
+The -swap flag will run tests on random swapping of I/O placement, as described in part 2. It will run n independant swap tests of the I/Os sequentially.
+
+To enable the "full spreading" mode (part 4) recompile with the DO_FULL_SPREADING #define in utils.h set to a non-zero value
+
+when running the full spreading mode, run the program through valgrind to remove the unknown memory error (program will then run successfully). The memory error did not appear on Windows (where intial testing was done), and windows results match those obtained on linux when run thorugh valgrind.
+

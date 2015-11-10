@@ -23,13 +23,12 @@ PLATFORM = X11
 #PLATFORM = WIN32
 #PLATFORM = NO_GRAPHICS
 
-MODE = 0 #0=BIDIR, 1=UNIDIR
 
-HDR = graphics.h easygl_constants.h channel.h connection.h segment.h utils.h
-SRC = graphics.cpp channel.cpp connection.cpp main.cpp segment.cpp utils.cpp
-EXE = assignment1
+HDR = graphics.h easygl_constants.h block.h net.h tree.h utils.h utilvars.h
+SRC = graphics.cpp net.cpp block.cpp main.cpp tree.cpp utils.cpp
+EXE = assignment3
 BACKUP_FILENAME=`date "+backup-%Y%m%d-%H%M.zip"`
-FLAGS = -g -Wall -Wextra -pedantic -D$(PLATFORM) -DMODE=$(MODE) -std=c++11
+FLAGS = -g -Wall -Wextra -pedantic -D$(PLATFORM) -std=c++11
 
 # Need to tell the linker to link to the libraries.
 # WIN32 links to all the win32 API libraries every time (no need for flags)
@@ -38,10 +37,8 @@ ifeq ($(PLATFORM),X11)
    FLAGS += $(shell pkg-config --cflags freetype2) # evaluates to the correct include flags for the freetype headers
 endif
 
-$(EXE): graphics.o channel.o connection.o segment.o utils.o main.o
+$(EXE): graphics.o net.o block.o tree.o utils.o main.o
 	scl enable devtoolset-2 'g++ $(FLAGS) $^ $(GRAPHICS_LIBS) -o $(EXE)'
-%	g++ $(FLAGS) -DMODE=BIDIR $^ $(GRAPHICS_LIBS) -o $(EXE)-bidir
-%	g++ $(FLAGS) -DMODE=UNIDIR $^ $(GRAPHICS_LIBS) -o $(EXE)-unidir
 
 # A generic make rule for creating a .o file from an identically named (sans extension) .cpp file
 # $< evaluates to the name of the _first_ dependency (the .cpp file in this case)
