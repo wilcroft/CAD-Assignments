@@ -4,6 +4,7 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
+#include "utilvars.h"
 
 using std::cout;
 using std::endl;
@@ -14,6 +15,7 @@ enum blockside {
 	RIGHTSIDE
 };
 
+class Net;
 
 class Block {
 private:
@@ -38,9 +40,9 @@ public:
 	 std::vector<int>  getConnections();
 	bool isLeft();
 	bool isRight();
-	void setLeft();
-	void setRight();
-	void setNoSide();
+	void setLeft(std::vector<Net> & netv = utils::nets);
+	void setRight(std::vector<Net> & netv = utils::nets);
+	void setNoSide(std::vector<Net> & netv = utils::nets);
 
 	void setIndex(int i);
 	int getIndex();
@@ -48,8 +50,10 @@ public:
 	int getBnum();
 
 	int cutCost(enum blockside b);
+	int cutCost(enum blockside b, std::vector<Net> &netv);
 	bool oppositeSide(Block &b);
 
 	
 };
 bool blockgreater( Block*  &a,  Block* &b);
+void printBlockVector(std::vector<Block> &b);

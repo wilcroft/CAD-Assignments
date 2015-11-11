@@ -2,9 +2,14 @@
 #include <vector>
 #include <list>
 #include <map>
-#include "block.h"
-#include "tree.h"
-#include "net.h"
+//#include "block.h"
+//#include "tree.h"
+//#include "net.h"
+
+class Block;
+class Net;
+class Tree;
+
 
 namespace utils {
 	extern std::vector<Block> allBlocks;

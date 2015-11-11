@@ -1,5 +1,6 @@
 #include "utils.h"
 #include "utilvars.h"
+#include "parallel.h"
 
 namespace utils {
 	std::vector<Block> allBlocks;
@@ -102,16 +103,23 @@ void doBandB(std::vector<Block> &blocks) {
 
 	int bestCost;
 	int netBestCost;
+	int randBestCost;
 	
 	//Get inital "best cost"
 	bestCost = initialCost(*queue.begin(), count);
 	cout << "Best Cost: " << bestCost << endl;
 	netBestCost = initialCostNet(count);
 	cout << "Net Best Cost: " << netBestCost << endl;
-	if (netBestCost > bestCost) cout << "Using 'Best Cost'" << endl;
-	else {
+	randBestCost = initialCostRandom(count);
+	cout << "Rand Best Cost: " << randBestCost << endl;
+	if (netBestCost > bestCost && randBestCost > bestCost) cout << "Using 'Best Cost'" << endl;
+	else if (randBestCost > netBestCost) {
 		bestCost = netBestCost;
 		cout << "Using 'Net Best Cost'" << endl;
+	}
+	else {
+		bestCost = randBestCost;
+		cout << "Using 'Rand Best Cost'" << endl;
 	}
 
 	utils::bbTree = new Tree();
@@ -119,16 +127,30 @@ void doBandB(std::vector<Block> &blocks) {
 	(*it)->setLeft();
 	lcount++;
 	it++;
-	exploreTree(queue, it, 0, bestCost, lcount, rcount, count, utils::bbTree);
+	
+	State s;
+	s.blocks = utils::allBlocks;
+	s.nets = utils::nets;
+	s.maxcount = count;
+	s.lcount = 1;
+	s.rcount = 0;
 
+	//cout << "Old:" << endl;
+	//exploreTree(queue, it, 0, bestCost, lcount, rcount, count, utils::bbTree);
+	//cout << "New:" << endl;
+	//it = queue.begin();
+	//it++;
+	updateBestCost(bestCost);
+	exploreTree(queue, it, s, utils::bbTree);
+	bestCost = utils::bestCost;
+
+	
 	cout << "Best Cost: " << bestCost << endl;
 	cout << "Node Count " << utils::nodecount << endl;
 
 }
 
 void exploreTree(std::list<Block*> &blocks, std::list<Block*>::iterator it, int currCost, int& bestCost, int lcount, int rcount, const int maxcount, Tree * treenode) {
-	std::list<Block *>::iterator tempit;
-
 	int newcost;
 	int lbcost;
 
@@ -139,6 +161,8 @@ void exploreTree(std::list<Block*> &blocks, std::list<Block*>::iterator it, int 
 	lbcost = getLBCost(utils::nets, maxcount - lcount, maxcount - rcount);
 	if (lbcost > bestCost) return;
 	if (it == blocks.end() && currCost < bestCost) {
+		cout << "(" << currCost << ") ";
+		printBlockVector(utils::allBlocks);
 		bestCost = currCost;
 		return;
 	}
@@ -167,6 +191,154 @@ void exploreTree(std::list<Block*> &blocks, std::list<Block*>::iterator it, int 
 	return;
 
 }
+
+void exploreTree(std::list<Block*> &blocks, std::list<Block*>::iterator it, State &s, Tree * treenode) {
+	int newcost;
+	int lbcost;
+	s.cost = getCurrentCost(s.nets);
+
+	if (s.lcount > s.maxcount)
+		return;
+	if (s.rcount > s.maxcount)
+		return;
+	lbcost = getLBCost(s.nets, s.maxcount - s.lcount, s.maxcount - s.rcount);
+	if (lbcost > utils::bestCost) return;
+	if (it == blocks.end() && s.cost < utils::bestCost) {
+		if (updateBestCost(s.cost))
+			cout << "(" << s.cost << ") ";
+		printBlockVector(s.blocks);
+		return;
+	}
+	int idx = (*it)->getBnum();
+	newcost = s.cost + s.blocks[idx].cutCost(LEFTSIDE,s.nets);
+	if (newcost<utils::bestCost) {
+		State sleft = s;
+		sleft.blocks[idx].setLeft(sleft.nets);
+		sleft.lcount++;
+		//		cout << "Block " << bcurr->getBnum() + 1 << " Left: Current Cost = " << newcost << endl;
+		it++;
+		addNodeCount();
+		exploreTree(blocks, it, sleft, treenode->addLeft(newcost));
+		it--;
+	}
+	newcost = s.cost + s.blocks[idx].cutCost(RIGHTSIDE, s.nets);
+	if (newcost<utils::bestCost) {
+		State sright = s;
+		sright.blocks[idx].setRight(sright.nets);
+		sright.rcount++;
+		//		cout << "Block " << bcurr->getBnum() + 1 << " Right: Current Cost = " << newcost << endl;
+		it++;
+		addNodeCount();
+		exploreTree(blocks, it, sright, treenode->addRight(newcost));
+		it--;
+	}
+
+	return;
+
+}
+
+void doHeapedBandB(std::vector<Block> &blocks) {
+
+	std::list<Block *> queue = getOrderedList(blocks);
+	unsigned int count = (unsigned int)ceil(blocks.size() / 2.0);
+	unsigned int lcount = 0, rcount = 0;
+
+	int bestCost;
+	int netBestCost;
+	int randBestCost;
+
+	//Get inital "best cost"
+	bestCost = initialCost(*queue.begin(), count);
+	cout << "Best Cost: " << bestCost << endl;
+	netBestCost = initialCostNet(count);
+	cout << "Net Best Cost: " << netBestCost << endl;
+	randBestCost = initialCostRandom(count);
+	cout << "Rand Best Cost: " << randBestCost << endl;
+	if (netBestCost > bestCost && randBestCost > bestCost) cout << "Using 'Best Cost'" << endl;
+	else if (randBestCost > netBestCost) {
+		bestCost = netBestCost;
+		cout << "Using 'Net Best Cost'" << endl;
+	}
+	else {
+		bestCost = randBestCost;
+		cout << "Using 'Rand Best Cost'" << endl;
+	}
+	updateBestCost(bestCost);
+
+	utils::bbTree = new Tree();
+	std::list<Block*>::iterator it = queue.begin();
+	(*it)->setLeft();
+	lcount++;
+	it++;
+
+	State s;
+	s.blocks = utils::allBlocks;
+	s.nets = utils::nets;
+	s.maxcount = count;
+	s.lcount = 1;
+	s.rcount = 0;
+
+	std::priority_queue<State, std::vector<State>, statecmp> stateQueue;
+	stateQueue.push(s);
+
+	while (stateQueue.size() != 0) {
+		s = stateQueue.top();
+		stateQueue.pop();
+		exploreState(s,&stateQueue);
+	}
+
+	cout << "Best Cost: " << utils::bestCost << endl;
+	cout << "Node Count " << utils::nodecount << endl;
+
+}
+
+void exploreState(State &s, std::priority_queue<State, std::vector<State>, statecmp> * stateQueue) {
+	int newcost;
+	int lbcost;
+	s.cost = getCurrentCost(s.nets);
+
+	if (s.lcount > s.maxcount)
+		return;
+	if (s.rcount > s.maxcount)
+		return;
+	lbcost = getLBCost(s.nets, s.maxcount - s.lcount, s.maxcount - s.rcount);
+	if (lbcost > utils::bestCost) return;
+	if (s.it == s.queue->end() && s.cost < utils::bestCost) {
+		if (updateBestCost(s.cost))
+			cout << "(" << s.cost << ") ";
+		printBlockVector(s.blocks);
+		return;
+	}
+	int idx = (*s.it)->getBnum();
+	newcost = s.cost + s.blocks[idx].cutCost(LEFTSIDE, s.nets);
+	if (newcost<utils::bestCost) {
+		State sleft = s;
+		sleft.blocks[idx].setLeft(sleft.nets);
+		sleft.lcount++;
+		s.it++;
+		sleft.it = s.it;
+		sleft.treenode = s.treenode->addLeft(newcost);
+		addNodeCount();
+		stateQueue->push(sleft);
+		s.it--;
+	}
+	newcost = s.cost + s.blocks[idx].cutCost(RIGHTSIDE, s.nets);
+	if (newcost<utils::bestCost) {
+		State sright = s;
+		sright.blocks[idx].setRight(sright.nets);
+		sright.rcount++;
+		s.it++;
+		sright.it = s.it;
+		sright.treenode = s.treenode->addRight(newcost);
+		addNodeCount();
+		stateQueue->push(sright);
+		s.it--;
+	}
+
+	return;
+
+}
+
 
 int initialCost(Block * b, int maxcount) {
 	std::vector<int> blocks;
@@ -247,6 +419,33 @@ int initialCostNet(int maxcount) {
 	}
 
 	return cost;
+}
+
+int initialCostRandom(int maxcount) {
+	std::vector<Block> randBlocks = utils::allBlocks;
+	Block b;
+	int cost = 0;
+
+	for (int i = 0; i < maxcount; i++) {
+		std::random_shuffle(randBlocks.begin(), randBlocks.end());
+		b = randBlocks.back();
+		randBlocks.pop_back();
+		utils::allBlocks[b.getBnum()].setLeft();
+	}
+	for (auto&x : utils::allBlocks) {
+		if (!x.isLeft()) x.setRight();
+	}
+
+	for (auto& x : utils::nets) {
+		if (x.isCrossing()) cost++;
+	}
+
+	for (auto&x : utils::allBlocks) {
+		x.setNoSide();
+	}
+
+	return cost;
+
 }
 
 

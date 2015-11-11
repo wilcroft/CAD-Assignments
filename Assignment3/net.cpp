@@ -4,9 +4,16 @@
 void Net::clear() {
 	left.clear();
 	right.clear();
+	count = left.size() + right.size();
 }
-void Net::clearLeft() { left.clear(); }
-void Net::clearRight() { right.clear(); }
+void Net::clearLeft() {
+	left.clear();
+	count = left.size() + right.size();
+}
+void Net::clearRight() { 
+	right.clear();
+	count = left.size() + right.size();
+}
 
 void Net::setSize(int i) { size = i; }
 int Net::getSize() { return size; }
@@ -21,6 +28,7 @@ void Net::addLeft(int i) {
 
 void Net::removeLeft(int i){
 	left.remove(i);
+	count = left.size() + right.size();
 }
 void Net::addRight(int i){
 	left.remove(i);
@@ -31,10 +39,12 @@ void Net::addRight(int i){
 }
 void Net::removeRight(int i) {
 	right.remove(i);
+	count = left.size() + right.size();
 }
 void Net::remove(int i) {
 	left.remove(i);
 	right.remove(i);
+	count = left.size() + right.size();
 }
 
 bool Net::willCross(enum blockside b) {

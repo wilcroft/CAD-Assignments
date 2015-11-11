@@ -1,5 +1,5 @@
 #include "block.h"
-#include "utilvars.h"
+#include "net.h"
 
 Block::Block() {
 	side = NONE;
@@ -56,26 +56,26 @@ bool Block::isLeft() {
 bool Block::isRight() {
 	return side==RIGHTSIDE;
 }
-void Block::setLeft() {
+void Block::setLeft(std::vector<Net> & netv) {
 	if (side != LEFTSIDE) {
 		for (auto& x : nets) {
-			if (side == RIGHTSIDE) utils::nets[x].removeRight(bnum);
-			utils::nets[x].addLeft(bnum);
+			if (side == RIGHTSIDE) netv[x].removeRight(bnum);
+			netv[x].addLeft(bnum);
 		}
 		side = LEFTSIDE;
 	}
 }
-void Block::setRight() {
+void Block::setRight(std::vector<Net> & netv) {
 	if (side != RIGHTSIDE) {
 		for (auto& x : nets) {
-			if (side == LEFTSIDE) utils::nets[x].removeLeft(bnum);
-			utils::nets[x].addRight(bnum);
+			if (side == LEFTSIDE) netv[x].removeLeft(bnum);
+			netv[x].addRight(bnum);
 		}
 		side = RIGHTSIDE;
 	}
 }
-void Block::setNoSide() {
-	for (auto& x : nets) utils::nets[x].remove(bnum);
+void Block::setNoSide(std::vector<Net> & netv) {
+	for (auto& x : nets) netv[x].remove(bnum);
 	side = NONE;
 }
 
@@ -84,11 +84,18 @@ int Block::getIndex() { return index; }
 void Block::setBnum(int i) { bnum = i; }
 int Block::getBnum() { return bnum; }
 
-
 int Block::cutCost(enum blockside b) {
 	int cost = 0;
-	for (auto &x :nets) {
+	for (auto &x : nets) {
 		if (utils::nets[x].willCross(b)) cost++;
+	}
+	return cost;
+}
+
+int Block::cutCost(enum blockside b, std::vector<Net> &netv) {
+	int cost = 0;
+	for (auto &x :nets) {
+		if (netv[x].willCross(b)) cost++;
 	}
 	return cost;
 }
@@ -97,4 +104,13 @@ bool Block::oppositeSide(Block &b) {
 	if (side == LEFTSIDE && b.isRight()) return true;
 	if (side == RIGHTSIDE && b.isLeft()) return true;
 	return false;
+}
+void printBlockVector(std::vector<Block> &b) {
+	cout << "Blocks:" << endl;
+	for (auto&x : b) {
+		cout << x.getBnum() + 1;
+		if (x.isLeft()) cout << "L; ";
+		if (x.isRight()) cout << "R; ";
+	}
+	cout << endl;
 }
