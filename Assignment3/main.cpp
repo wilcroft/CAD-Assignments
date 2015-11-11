@@ -23,6 +23,7 @@ int main(int argc, char** argv) {
 
 	for (unsigned int i = 0; i < utils::netlist.size(); i++) {
 		cout << "Net " << i + 1 << ": ";
+		utils::nets[i].setSize(utils::netlist[i].size());
 		for (auto &x : utils::netlist[i])
 			cout << x + 1 << ", ";
 		cout << endl;

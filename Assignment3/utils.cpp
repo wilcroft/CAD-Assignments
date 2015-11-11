@@ -101,10 +101,18 @@ void doBandB(std::vector<Block> &blocks) {
 	unsigned int lcount = 0, rcount = 0;
 
 	int bestCost;
+	int netBestCost;
 	
 	//Get inital "best cost"
 	bestCost = initialCost(*queue.begin(), count);
-	cout << "Initial Cost: " << bestCost << endl;
+	cout << "Best Cost: " << bestCost << endl;
+	netBestCost = initialCostNet(count);
+	cout << "Net Best Cost: " << netBestCost << endl;
+	if (netBestCost > bestCost) cout << "Using 'Best Cost'" << endl;
+	else {
+		bestCost = netBestCost;
+		cout << "Using 'Net Best Cost'" << endl;
+	}
 
 	utils::bbTree = new Tree();
 	std::list<Block*>::iterator it = queue.begin();
@@ -122,12 +130,14 @@ void exploreTree(std::list<Block*> &blocks, std::list<Block*>::iterator it, int 
 	std::list<Block *>::iterator tempit;
 
 	int newcost;
+	int lbcost;
 
 	if (lcount > maxcount)
 		return;
 	if (rcount > maxcount) 
 		return;
-	if (currCost > bestCost) return;
+	lbcost = getLBCost(utils::nets, maxcount - lcount, maxcount - rcount);
+	if (lbcost > bestCost) return;
 	if (it == blocks.end() && currCost < bestCost) {
 		bestCost = currCost;
 		return;
@@ -136,7 +146,7 @@ void exploreTree(std::list<Block*> &blocks, std::list<Block*>::iterator it, int 
 	newcost = currCost + (bcurr)->cutCost(LEFTSIDE);
 	if (newcost<bestCost) {
 		(bcurr)->setLeft();
-		cout << "Block " << bcurr->getBnum() + 1 << " Left: Current Cost = " << newcost << endl;
+//		cout << "Block " << bcurr->getBnum() + 1 << " Left: Current Cost = " << newcost << endl;
 		it++;
 		utils::nodecount++;
 		exploreTree(blocks, it, newcost, bestCost, lcount + 1, rcount, maxcount, treenode->addLeft(newcost));
@@ -146,7 +156,7 @@ void exploreTree(std::list<Block*> &blocks, std::list<Block*>::iterator it, int 
 	newcost = currCost + (bcurr)->cutCost(RIGHTSIDE);
 	if (newcost<bestCost) {
 		(bcurr)->setRight();
-		cout << "Block " << bcurr->getBnum() + 1 << " Right: Current Cost = " << newcost << endl;
+//		cout << "Block " << bcurr->getBnum() + 1 << " Right: Current Cost = " << newcost << endl;
 		it++;
 		utils::nodecount++;
 		exploreTree(blocks, it, newcost, bestCost, lcount, rcount+1, maxcount, treenode->addRight(newcost));
@@ -196,6 +206,49 @@ int initialCost(Block * b, int maxcount) {
 	return cost;
 
 }
+bool sortNetPtrs(std::list<int>* a, std::list<int> * b) {
+	if (a->size() > b->size()) return true;
+	else return false;
+}
+
+int initialCostNet(int maxcount) {
+	std::list<std::list<int>*> sortedNets;
+	for (int i = 0; i < utils::netlist.size(); i++) {
+		sortedNets.push_back(&utils::netlist[i]);
+	}
+	//for (auto x : utils::netlist) {
+//		sortedNets.push_back(&x);
+	//}
+	sortedNets.sort(sortNetPtrs);
+	std::list<std::list<int>*>::iterator netit;
+	std::list<int>::iterator blockit;
+
+	int blockcount = 0;
+	int cost = 0;
+
+	for (netit = sortedNets.begin(); blockcount < maxcount; netit++) {
+		for (blockit = (*netit)->begin(); blockcount < maxcount && blockit != (*netit)->end(); blockit++) {
+			if (!utils::allBlocks[*blockit].isLeft()) {
+				blockcount++;
+				utils::allBlocks[*blockit].setLeft();
+			}
+		}
+	}
+	for (auto&x : utils::allBlocks) {
+		if (!x.isLeft()) x.setRight();
+	}
+
+	for (auto& x : utils::nets) {
+		if (x.isCrossing()) cost++;
+	}
+
+	for (auto&x : utils::allBlocks) {
+		x.setNoSide();
+	}
+
+	return cost;
+}
+
 
 void drawscreen() {
     set_draw_mode(DRAW_NORMAL);
@@ -207,6 +260,9 @@ void drawscreen() {
 	int y = 20 * (1 << utils::allBlocks.size()) -5;
 	int dy = 20 * (1 << utils::allBlocks.size()) / utils::allBlocks.size();
 
+	setfontsize(12);
+	cout << "Font Size: " << getfontsize() << endl;
+
 	Tree * ptr = utils::bbTree;
 	drawTree(ptr, x, y, utils::allBlocks.size()-1,dy);
 
@@ -214,7 +270,7 @@ void drawscreen() {
 
 void drawTree(Tree * ptr, int x, int y, int i, int dy) {
 	i--;
-	cout << "(" << x << ", " << y << ", " << i << ")" << endl;
+	//cout << "(" << x << ", " << y << ", " << i << ")" << endl;
 	setcolor(BLACK);
 	if (ptr->left() != nullptr) {
 		setcolor(RED);
@@ -226,7 +282,7 @@ void drawTree(Tree * ptr, int x, int y, int i, int dy) {
 		drawline(x, y, x + 20 * (1 << i), y - dy);
 		drawTree(ptr->right(), x + 20 * (1 << i), y - dy, i, dy);
 	}
-	drawtext(x, y, std::to_string(ptr->getValue()), 150, FLT_MAX);
+	drawtext(x, y, std::to_string(ptr->getValue()), FLT_MAX, FLT_MAX);
 }
 /*
 namespace commonvars{
