@@ -82,7 +82,7 @@ void removeFixedBlocks(std::list<Block *> * blocks);
 void recurseRemoveOverlap(std::list<Block> * blocks, int i);
 */
 void drawscreen();
-void drawTree(Tree * ptr, int x, int y, int i, int dy);
+void drawTree(Tree * ptr, long int x, long int y, int i, long int dy);
 
 
 

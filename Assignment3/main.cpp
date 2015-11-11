@@ -38,8 +38,8 @@ int main(int argc, char** argv) {
 	doBandB(utils::allBlocks);
 
 	init_graphics("Branch+Bound", WHITE);
-	int x = 20 * (1 << utils::allBlocks.size());
-	cout << x << endl;
+	long int x = 20 * (1 << utils::allBlocks.size());
+//	cout << x << endl;
 
 	const t_bound_box init_co = t_bound_box(0, 0,x , x+20);
 	set_visible_world(init_co);
