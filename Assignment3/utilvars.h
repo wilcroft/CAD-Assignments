@@ -12,5 +12,5 @@ namespace utils {
 	//extern std::map<std::pair<Block*, enum blockside>, std::pair<int, bool>> tree;
 	extern Tree * bbTree;
 	extern std::vector<Net> nets;
-	extern int nodecount;
+	extern unsigned long int nodecount;
 }
