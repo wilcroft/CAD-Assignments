@@ -26,5 +26,5 @@ int initialCost(Block * b, int maxcount);
 int initialCostNet(int maxcount);
 
 void drawscreen();
-void drawTree(Tree * ptr, long int x, long int y, int i, long int dy);
+void drawTree(Tree * ptr, float x, float y, int i, float dy);
 

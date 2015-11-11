@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
 	doBandB(utils::allBlocks);
 
 	init_graphics("Branch+Bound", WHITE);
-	long int x = 20 * (1 << utils::allBlocks.size());
+	float x = 20.0f * (1 << utils::allBlocks.size());
 //	cout << x << endl;
 
 	const t_bound_box init_co = t_bound_box(0, 0,x , x+20);

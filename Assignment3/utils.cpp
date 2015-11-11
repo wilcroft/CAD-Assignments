@@ -97,7 +97,7 @@ std::list <Block *> getOrderedList(std::vector<Block> &b) {
 
 void doBandB(std::vector<Block> &blocks) {
 	std::list<Block *> queue = getOrderedList(blocks);
-	unsigned int count = ceil(blocks.size()/2.0);
+	unsigned int count = (unsigned int)ceil(blocks.size()/2.0);
 	unsigned int lcount = 0, rcount = 0;
 
 	int bestCost;
@@ -256,9 +256,9 @@ void drawscreen() {
     setlinestyle(SOLID);
     setlinewidth(1);
 
-	long int x = 10 * (1 << utils::allBlocks.size());
-	long int y = 20 * (1 << utils::allBlocks.size()) -5;
-	long int dy = 20 * (1 << utils::allBlocks.size()) / utils::allBlocks.size();
+	float x = 10.0f * (1 << utils::allBlocks.size());
+	float y = 20.0f * (1 << utils::allBlocks.size()) -5;
+	float dy = 20.0f * (1 << utils::allBlocks.size()) / utils::allBlocks.size();
 
     setfontsize(12);
 
@@ -270,7 +270,7 @@ void drawscreen() {
 
 }
 
-void drawTree(Tree * ptr, long int x, long int y, int i, long int dy) {
+void drawTree(Tree * ptr, float x, float y, int i, float dy) {
 	i--;
 //	cout << "(" << x << ", " << y << ", " << i << ")" << endl;
 	setcolor(BLACK);
