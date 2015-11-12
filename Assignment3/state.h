@@ -23,6 +23,7 @@ public:
 };
 
 class statecmp {
+public:
 	bool operator() (const State& lhs, const State& rhs) {
 		return (lhs.cost < rhs.cost);
 	}

@@ -241,7 +241,6 @@ void doHeapedBandB(std::vector<Block> &blocks) {
 
 	std::list<Block *> queue = getOrderedList(blocks);
 	unsigned int count = (unsigned int)ceil(blocks.size() / 2.0);
-	unsigned int lcount = 0, rcount = 0;
 
 	int bestCost;
 	int netBestCost;
@@ -268,7 +267,6 @@ void doHeapedBandB(std::vector<Block> &blocks) {
 	utils::bbTree = new Tree();
 	std::list<Block*>::iterator it = queue.begin();
 	(*it)->setLeft();
-	lcount++;
 	it++;
 
 	State s;
