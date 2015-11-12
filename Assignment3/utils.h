@@ -9,6 +9,7 @@
 #include <cfloat>
 #include <random>
 #include <queue>
+#include <ctime>
 
 #include "block.h"
 #include "tree.h"

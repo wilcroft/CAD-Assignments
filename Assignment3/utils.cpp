@@ -105,6 +105,8 @@ void doBandB(std::vector<Block> &blocks) {
 	int netBestCost;
 	int randBestCost;
 	
+    uint64_t t0, t1, t2;
+    t0 = clock();
 	//Get inital "best cost"
 	bestCost = initialCost(*queue.begin(), count);
 	cout << "Best Cost: " << bestCost << endl;
@@ -121,7 +123,6 @@ void doBandB(std::vector<Block> &blocks) {
 		bestCost = randBestCost;
 		cout << "Using 'Rand Best Cost'" << endl;
 	}
-
 	utils::bbTree = new Tree();
 	std::list<Block*>::iterator it = queue.begin();
 	(*it)->setLeft();
@@ -141,13 +142,17 @@ void doBandB(std::vector<Block> &blocks) {
 	//it = queue.begin();
 	//it++;
 	updateBestCost(bestCost);
+    t1 = clock();
 	exploreTree(queue, it, s, utils::bbTree);
 	bestCost = utils::bestCost;
-
+    t2 = clock();
 	
 	cout << "Best Cost: " << bestCost << endl;
 	cout << "Node Count " << utils::nodecount << endl;
-
+    cout << "B+B Times:" << endl;
+    cout << "Initial Costs:  " << ((double)(t1 - t0))  << " cycles" << endl;
+    cout << "Branch+Bound:   " << ((double)(t2 - t1)) * 1000.0 / (double)CLOCKS_PER_SEC << "ms" << endl;
+    cout << "Total:          " << ((double)(t2 - t0)) * 1000.0 / (double)CLOCKS_PER_SEC << "ms" << endl;
 }
 
 void exploreTree(std::list<Block*> &blocks, std::list<Block*>::iterator it, int currCost, int& bestCost, int lcount, int rcount, const int maxcount, Tree * treenode) {

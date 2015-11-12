@@ -24,8 +24,8 @@ PLATFORM = X11
 #PLATFORM = NO_GRAPHICS
 
 
-HDR = graphics.h easygl_constants.h block.h net.h tree.h utils.h utilvars.h
-SRC = graphics.cpp net.cpp block.cpp main.cpp tree.cpp utils.cpp
+HDR = graphics.h easygl_constants.h block.h net.h tree.h utils.h utilvars.h parallel.h state.h
+SRC = graphics.cpp net.cpp block.cpp main.cpp tree.cpp utils.cpp parallel.cpp
 EXE = assignment3
 BACKUP_FILENAME=`date "+backup-%Y%m%d-%H%M.zip"`
 FLAGS = -g -Wall -Wextra -pedantic -D$(PLATFORM) -std=c++11
@@ -37,14 +37,16 @@ ifeq ($(PLATFORM),X11)
    FLAGS += $(shell pkg-config --cflags freetype2) # evaluates to the correct include flags for the freetype headers
 endif
 
-$(EXE): graphics.o net.o block.o tree.o utils.o main.o
+$(EXE): graphics.o net.o block.o tree.o utils.o main.o parallel.o
 	scl enable devtoolset-2 'g++ $(FLAGS) $^ $(GRAPHICS_LIBS) -o $(EXE)'
+	scl enable devtoolset-2 'g++ $(FLAGS) -DPARALLEL $(addprefix parallel-,$^) $(GRAPHICS_LIBS) -o parallel-$(EXE)'
 
 # A generic make rule for creating a .o file from an identically named (sans extension) .cpp file
 # $< evaluates to the name of the _first_ dependency (the .cpp file in this case)
 # $@ evaluates to the name of the target (the .o file in this case)
 %.o: %.cpp $(HDR) 
 	scl enable devtoolset-2 'g++ -c $(FLAGS) $< -o $@'
+	scl enable devtoolset-2 'g++ -c $(FLAGS) -DPARALLEL $< -o parallel-$@'
 
 # graphics.o: graphics.cpp $(HDR)
 # 	g++ -c $(FLAGS) graphics.cpp
