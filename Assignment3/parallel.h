@@ -1,7 +1,7 @@
 #pragma once
 
 #include "utilvars.h"
-
+#define PARALLEL
 namespace utils {
 	extern int bestCost;
 }
@@ -9,7 +9,16 @@ namespace utils {
 #ifdef PARALLEL
 #include <thread>
 #include <mutex>
+#include <future>
+#define THREADCOUNT 16
 
+namespace thds {
+	extern std::thread * workers[THREADCOUNT];
+	extern bool workeractive[THREADCOUNT];
+	extern int active;
+	extern std::mutex thdLock;
+	extern std::mutex heapLock;
+}
 #endif
 
 
