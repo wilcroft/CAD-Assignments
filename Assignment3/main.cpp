@@ -26,7 +26,8 @@ int main(int argc, char** argv) {
 		cout << endl;
 	}
 
-	doBandB(utils::allBlocks);
+	//doBandB(utils::allBlocks);
+	doHeapedBandB(utils::allBlocks);
 
 	init_graphics("Branch+Bound", WHITE);
 	float x = 20.0f * (1 << utils::allBlocks.size());

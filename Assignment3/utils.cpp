@@ -275,6 +275,9 @@ void doHeapedBandB(std::vector<Block> &blocks) {
 	s.maxcount = count;
 	s.lcount = 1;
 	s.rcount = 0;
+	s.queue = &queue;
+	s.it = it;
+	s.treenode = utils::bbTree;
 
 	std::priority_queue<State, std::vector<State>, statecmp> stateQueue;
 	stateQueue.push(s);
@@ -460,7 +463,7 @@ void drawscreen() {
     setfontsize(12);
 
 	setfontsize(12);
-	cout << "Font Size: " << getfontsize() << endl;
+//	cout << "Font Size: " << getfontsize() << endl;
 
 	Tree * ptr = utils::bbTree;
 	drawTree(ptr, x, y, utils::allBlocks.size()-1,dy);
