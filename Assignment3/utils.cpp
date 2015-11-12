@@ -278,6 +278,7 @@ void doHeapedBandB(std::vector<Block> &blocks) {
 	s.queue = &queue;
 	s.it = it;
 	s.treenode = utils::bbTree;
+	s.depth = 0;
 
 	std::priority_queue<State, std::vector<State>, statecmp> stateQueue;
 	stateQueue.push(s);
@@ -316,6 +317,7 @@ void exploreState(State &s, std::priority_queue<State, std::vector<State>, state
 		State sleft = s;
 		sleft.blocks[idx].setLeft(sleft.nets);
 		sleft.lcount++;
+		sleft.depth++;
 		s.it++;
 		sleft.it = s.it;
 		sleft.treenode = s.treenode->addLeft(newcost);
@@ -328,6 +330,7 @@ void exploreState(State &s, std::priority_queue<State, std::vector<State>, state
 		State sright = s;
 		sright.blocks[idx].setRight(sright.nets);
 		sright.rcount++;
+		sright.depth++;
 		s.it++;
 		sright.it = s.it;
 		sright.treenode = s.treenode->addRight(newcost);
@@ -456,7 +459,7 @@ void drawscreen() {
     setlinestyle(SOLID);
     setlinewidth(1);
 
-	float x = 10.0f * (1 << utils::allBlocks.size());
+	uint64_t x = 50.0 * (1 << utils::allBlocks.size());
 	float y = 20.0f * (1 << utils::allBlocks.size()) -5;
 	float dy = 20.0f * (1 << utils::allBlocks.size()) / utils::allBlocks.size();
 
@@ -470,19 +473,19 @@ void drawscreen() {
 
 }
 
-void drawTree(Tree * ptr, float x, float y, int i, float dy) {
+void drawTree(Tree * ptr, uint64_t x, float y, int i, float dy) {
 	i--;
 //	cout << "(" << x << ", " << y << ", " << i << ")" << endl;
 	setcolor(BLACK);
 	if (ptr->left() != nullptr) {
 		setcolor(RED);
-		drawline(x, y, x - 20*(1 << i), y - dy);
-		drawTree(ptr->left(), x - 20 * (1 << i), y - dy, i, dy);
+		drawline(x, y, x - 50*(1 << i), y - dy);
+		drawTree(ptr->left(), x - 50 * (1 << i), y - dy, i, dy);
 	}
 	if (ptr->right() != nullptr) {
 		setcolor(RED);
-		drawline(x, y, x + 20 * (1 << i), y - dy);
-		drawTree(ptr->right(), x + 20 * (1 << i), y - dy, i, dy);
+		drawline(x, y, x + 50 * (1 << i), y - dy);
+		drawTree(ptr->right(), x + 50 * (1 << i), y - dy, i, dy);
 	}
 	drawtext(x, y, std::to_string(ptr->getValue()), FLT_MAX, FLT_MAX);
 }

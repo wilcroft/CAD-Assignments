@@ -15,6 +15,7 @@ public:
 	int maxcount;
 	int lcount;
 	int rcount;
+	int depth;
 
 	std::list<Block*> * queue;
 	std::list<Block*>::iterator it;
@@ -25,6 +26,8 @@ public:
 class statecmp {
 public:
 	bool operator() (const State& lhs, const State& rhs) {
-		return (lhs.cost < rhs.cost);
+		if (lhs.depth == rhs.depth) 
+			return (lhs.cost > rhs.cost);
+		else return (lhs.depth < rhs.depth);
 	}
 };

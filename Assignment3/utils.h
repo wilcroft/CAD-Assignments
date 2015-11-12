@@ -33,5 +33,5 @@ int initialCostNet(int maxcount);
 int initialCostRandom(int maxcount);
 
 void drawscreen();
-void drawTree(Tree * ptr, float x, float y, int i, float dy);
+void drawTree(Tree * ptr, uint64_t x, float y, int i, float dy);
 
