@@ -1,4 +1,5 @@
 #include "utils.h"
+#include "parallel.h"
 #include "utilvars.h"
 #include <ctime>
 
@@ -31,14 +32,19 @@ int main(int argc, char** argv) {
 
 	t1 = clock();
 
+#ifndef PARALLEL
 	doBandB(utils::allBlocks);
-	//doHeapedBandB(utils::allBlocks);
-
+#else
+	doHeapedBandB(utils::allBlocks);
+#endif
 	t2 = clock();
 
+	cout << "Times:" << endl;
+	cout << "Initialization: " << ((double)(t1 - t0)) * 1000 / CLOCKS_PER_SEC << "ms" << endl;
+	cout << "Branch+Bound:   " << ((double)(t2 - t1)) * 1000 / CLOCKS_PER_SEC << "ms" << endl;
 	init_graphics("Branch+Bound", WHITE);
 	float y = 20.0f * (1 << utils::allBlocks.size());
-	uint64_t x = 100 * (1 << utils::allBlocks.size());
+	double x = 100.0 * (1 << utils::allBlocks.size());
 //	cout << x << endl;
 
 	const t_bound_box init_co = t_bound_box(0, 0, x, y+20);
@@ -48,9 +54,6 @@ int main(int argc, char** argv) {
 	update_message("the tree");
 	t3 = clock();
 
-	cout << "Times:" << endl;
-	cout << "Initialization: " << ((double)(t1 - t0)) * 1000 / CLOCKS_PER_SEC << "ms" << endl;
-	cout << "Branch+Bound:   " << ((double)(t2 - t1)) * 1000 / CLOCKS_PER_SEC << "ms" << endl;
 	cout << "Graphics:       " << ((double)(t3 - t2)) * 1000 / CLOCKS_PER_SEC << "ms" << endl;
 	cout << "Total:          " << ((double)(t3 - t0)) * 1000 / CLOCKS_PER_SEC << "ms" << endl;
 

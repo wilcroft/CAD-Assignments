@@ -287,19 +287,61 @@ void doHeapedBandB(std::vector<Block> &blocks) {
 
 	std::priority_queue<State, std::vector<State>, statecmp> stateQueue;
 	stateQueue.push(s);
+#ifdef PARALLEL
+	while (stateQueue.size() != 0) {
+		int j = stateQueue.size();
+		for (int i = 0; i < j && i < THREADCOUNT; i++) {
+			thds::heapLock.lock();
+			s = stateQueue.top();
+			stateQueue.pop();
+			thds::heapLock.unlock();
+			//	thds::thdLock.lock();
+			thds::active++;
+	//		cout << "Started Thread " << i << endl;
+			thds::workers[i] = new std::thread(exploreState, s, &stateQueue);
+			//	thds::thdLock.unlock();
+		}
+		while (thds::active != 0) {
+			thds::active--;
+			thds::workers[thds::active]->join();
+		}
+	}
+	/*while (stateQueue.size() != 0 || thds::active !=0) {
+		if (stateQueue.size() != 0) {
+			while (thds::active == THREADCOUNT);
+			thds::thdLock.lock();
+			for (int i = 0; i < THREADCOUNT; i++) {
+				if (thds::workeractive[i] == false) {
+					thds::heapLock.lock();
+					s = stateQueue.top();
+					stateQueue.pop();
+					thds::heapLock.unlock();
+					thds::workeractive[i] = true;
+					thds::active++;
+					if (thds::workers[i] != nullptr) thds::workers[i]->join();
+					cout << "Started Thread " << i << endl;
+					thds::workers[i] = new std::thread(exploreState, s, &stateQueue);
+					break;
+				}
+			}
+			thds::thdLock.unlock();
 
+		}
+	}*/
+
+#else
 	while (stateQueue.size() != 0) {
 		s = stateQueue.top();
 		stateQueue.pop();
 		exploreState(s,&stateQueue);
 	}
-
+#endif
 	cout << "Best Cost: " << utils::bestCost << endl;
 	cout << "Node Count " << utils::nodecount << endl;
 
 }
 
-void exploreState(State &s, std::priority_queue<State, std::vector<State>, statecmp> * stateQueue) {
+void exploreState(State s, std::priority_queue<State, std::vector<State>, statecmp> * stateQueue) {
 	int newcost;
 	int lbcost;
 	s.cost = getCurrentCost(s.nets);
@@ -327,7 +369,13 @@ void exploreState(State &s, std::priority_queue<State, std::vector<State>, state
 		sleft.it = s.it;
 		sleft.treenode = s.treenode->addLeft(newcost);
 		addNodeCount();
+#ifdef PARALLEL
+		thds::heapLock.lock();
+#endif
 		stateQueue->push(sleft);
+#ifdef PARALLEL
+		thds::heapLock.unlock();
+#endif
 		s.it--;
 	}
 	newcost = s.cost + s.blocks[idx].cutCost(RIGHTSIDE, s.nets);
@@ -340,10 +388,28 @@ void exploreState(State &s, std::priority_queue<State, std::vector<State>, state
 		sright.it = s.it;
 		sright.treenode = s.treenode->addRight(newcost);
 		addNodeCount();
+#ifdef PARALLEL
+		thds::heapLock.lock();
+#endif
 		stateQueue->push(sright);
+#ifdef PARALLEL
+		thds::heapLock.unlock();
+#endif
 		s.it--;
 	}
-
+#ifdef PARALLEL
+	/*
+	thds::thdLock.lock();
+	for (int i = 0; i < THREADCOUNT; i++) {
+		if (thds::workers[i] != nullptr && std::this_thread::get_id() == thds::workers[i]->get_id()) {
+			thds::active--;
+			thds::workeractive[i] = false;
+			cout << "Done on Thread " << i << endl;
+			break;
+		}
+	}
+	thds::thdLock.unlock();*/
+#endif
 	return;
 
 }
@@ -464,13 +530,11 @@ void drawscreen() {
     setlinestyle(SOLID);
     setlinewidth(1);
 
-	uint64_t x = 50.0 * (1 << utils::allBlocks.size());
+	double x = 50.0 * (1 << utils::allBlocks.size());
 	float y = 20.0f * (1 << utils::allBlocks.size()) -5;
 	float dy = 20.0f * (1 << utils::allBlocks.size()) / utils::allBlocks.size();
 
     setfontsize(12);
-
-	setfontsize(12);
 //	cout << "Font Size: " << getfontsize() << endl;
 
 	Tree * ptr = utils::bbTree;
@@ -478,7 +542,7 @@ void drawscreen() {
 
 }
 
-void drawTree(Tree * ptr, uint64_t x, float y, int i, float dy) {
+void drawTree(Tree * ptr, double x, float y, int i, float dy) {
 	i--;
 //	cout << "(" << x << ", " << y << ", " << i << ")" << endl;
 	setcolor(BLACK);

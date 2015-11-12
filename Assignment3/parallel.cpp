@@ -6,6 +6,13 @@ namespace utils {
 }
 
 #ifdef PARALLEL
+namespace thds {
+	std::thread * workers[THREADCOUNT];
+	bool workeractive[THREADCOUNT];
+	int active = 0;
+	std::mutex thdLock;
+	std::mutex heapLock;
+}
 std::mutex bestCostLock;
 std::mutex nodeCountLock;
 
