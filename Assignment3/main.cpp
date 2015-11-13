@@ -43,9 +43,12 @@ int main(int argc, char** argv) {
 	cout << "Initialization: " << ((double)(t1 - t0)) * 1000 / CLOCKS_PER_SEC << "ms" << endl;
 	cout << "Branch+Bound:   " << ((double)(t2 - t1)) * 1000 / CLOCKS_PER_SEC << "ms" << endl;
 	init_graphics("Branch+Bound", WHITE);
-	float y = 20.0f * (1 << utils::allBlocks.size());
-	double x = 100.0 * (1 << utils::allBlocks.size());
+//	float y = 20.0f * (1 << utils::allBlocks.size());
+//	double x = 100.0 * (1 << utils::allBlocks.size());
 //	cout << x << endl;
+
+    float y = 10240;
+    float x = y;
 
 	const t_bound_box init_co = t_bound_box(0, 0, x, y+20);
 	set_visible_world(init_co);

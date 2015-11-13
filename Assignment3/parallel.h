@@ -1,7 +1,6 @@
 #pragma once
 
 #include "utilvars.h"
-#define PARALLEL
 namespace utils {
 	extern int bestCost;
 }

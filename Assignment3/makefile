@@ -39,14 +39,14 @@ endif
 
 $(EXE): graphics.o net.o block.o tree.o utils.o main.o parallel.o
 	scl enable devtoolset-2 'g++ $(FLAGS) $^ $(GRAPHICS_LIBS) -o $(EXE)'
-	scl enable devtoolset-2 'g++ $(FLAGS) -DPARALLEL $(addprefix parallel-,$^) $(GRAPHICS_LIBS) -o parallel-$(EXE)'
+	scl enable devtoolset-2 'g++ $(FLAGS) -lpthread -DPARALLEL $(addprefix parallel-,$^) $(GRAPHICS_LIBS) -o parallel-$(EXE)'
 
 # A generic make rule for creating a .o file from an identically named (sans extension) .cpp file
 # $< evaluates to the name of the _first_ dependency (the .cpp file in this case)
 # $@ evaluates to the name of the target (the .o file in this case)
 %.o: %.cpp $(HDR) 
 	scl enable devtoolset-2 'g++ -c $(FLAGS) $< -o $@'
-	scl enable devtoolset-2 'g++ -c $(FLAGS) -DPARALLEL $< -o parallel-$@'
+	scl enable devtoolset-2 'g++ -c $(FLAGS) -lpthread -DPARALLEL $< -o parallel-$@'
 
 # graphics.o: graphics.cpp $(HDR)
 # 	g++ -c $(FLAGS) graphics.cpp

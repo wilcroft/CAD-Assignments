@@ -108,7 +108,7 @@ void doBandB(std::vector<Block> &blocks) {
     uint64_t t0, t1, t2;
     t0 = clock();
 	//Get inital "best cost"
-	bestCost = initialCost(*queue.begin(), count);
+	bestCost = initialCost(*queue.rbegin(), count);
 	cout << "Best Cost: " << bestCost << endl;
 	netBestCost = initialCostNet(count);
 	cout << "Net Best Cost: " << netBestCost << endl;
@@ -297,12 +297,14 @@ void doHeapedBandB(std::vector<Block> &blocks) {
 			thds::heapLock.unlock();
 			//	thds::thdLock.lock();
 			thds::active++;
-	//		cout << "Started Thread " << i << endl;
+			//cout << "Started Thread " << i << endl;
 			thds::workers[i] = new std::thread(exploreState, s, &stateQueue);
+            //cout << "(" << thds::workers[i] << ")" << endl;
 			//	thds::thdLock.unlock();
 		}
 		while (thds::active != 0) {
 			thds::active--;
+         //   cout << "Joined Thread " << thds::active << "(" << thds::workers[thds::active] << ")" << endl;
 			thds::workers[thds::active]->join();
 		}
 	}
@@ -530,31 +532,42 @@ void drawscreen() {
     setlinestyle(SOLID);
     setlinewidth(1);
 
-	double x = 50.0 * (1 << utils::allBlocks.size());
-	float y = 20.0f * (1 << utils::allBlocks.size()) -5;
-	float dy = 20.0f * (1 << utils::allBlocks.size()) / utils::allBlocks.size();
+//	double x = 50.0 * (1 << utils::allBlocks.size());
+//	float y = 20.0f * (1 << utils::allBlocks.size()) -5;
+//	float dy = 20.0f * (1 << utils::allBlocks.size()) / utils::allBlocks.size();
+
+    float maxx = 10240;
+    float maxy = 10240;
+    float dy = maxy / utils::allBlocks.size();
+    float dx = maxx / 4;
 
     setfontsize(12);
 //	cout << "Font Size: " << getfontsize() << endl;
 
 	Tree * ptr = utils::bbTree;
-	drawTree(ptr, x, y, utils::allBlocks.size()-1,dy);
+//	drawTree(ptr, x, y, utils::allBlocks.size()-1,dy);
+	drawTree(ptr, maxx/2, maxy, dx ,dy);
 
 }
 
-void drawTree(Tree * ptr, double x, float y, int i, float dy) {
-	i--;
+//void drawTree(Tree * ptr, double x, float y, int i, float dy) {
+void drawTree(Tree * ptr, double x, float y, float dx, float dy) {
+//	i--;
 //	cout << "(" << x << ", " << y << ", " << i << ")" << endl;
 	setcolor(BLACK);
 	if (ptr->left() != nullptr) {
 		setcolor(RED);
-		drawline(x, y, x - 50*(1 << i), y - dy);
-		drawTree(ptr->left(), x - 50 * (1 << i), y - dy, i, dy);
+//		drawline(x, y, x - 50*(1 << i), y - dy);
+//		drawTree(ptr->left(), x - 50 * (1 << i), y - dy, i, dy);
+		drawline(x, y, x - dx, y - dy);
+		drawTree(ptr->left(), x - dx, y - dy, dx/2, dy);
 	}
 	if (ptr->right() != nullptr) {
 		setcolor(RED);
-		drawline(x, y, x + 50 * (1 << i), y - dy);
-		drawTree(ptr->right(), x + 50 * (1 << i), y - dy, i, dy);
+//		drawline(x, y, x + 50 * (1 << i), y - dy);
+//		drawTree(ptr->right(), x + 50 * (1 << i), y - dy, i, dy);
+		drawline(x, y, x + dx, y - dy);
+		drawTree(ptr->right(), x + dx, y - dy, dx/2, dy);
 	}
 	drawtext(x, y, std::to_string(ptr->getValue()), FLT_MAX, FLT_MAX);
 }
