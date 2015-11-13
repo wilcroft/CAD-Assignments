@@ -79,7 +79,7 @@ int getLBCost(std::vector<Net> &n, int lfree, int rfree, std::vector<Block> &b) 
 	int cost = 0;
 	std::vector<bool> netCosted;
 	netCosted.resize(n.size());
-	for (int i = 0; i < n.size(); i++) {
+	for (unsigned int i = 0; i < n.size(); i++) {
 		if (n[i].isCrossing() || n[i].mustCross(lfree, LEFTSIDE) || n[i].mustCross(rfree, RIGHTSIDE)) {
 			cost++;
 			netCosted[i] = true;
@@ -110,7 +110,7 @@ int getLBCost(std::vector<Net> &n, int lfree, int rfree, std::vector<Block> &b) 
 				cost++;
 				for (auto&y : nets) {
 					i--;
-					netCosted[i] = true;
+					netCosted[y] = true;
 					if (i == 0) break;
 				}
 			}

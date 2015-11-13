@@ -109,19 +109,19 @@ void doBandB(std::vector<Block> &blocks) {
     t0 = clock();
 	//Get inital "best cost"
 	bestCost = initialCost(*queue.rbegin(), count);
-	cout << "Best Cost: " << bestCost << endl;
+	cout << "Connection Cost: " << bestCost << endl;
 	netBestCost = initialCostNet(count);
-	cout << "Net Best Cost: " << netBestCost << endl;
+	cout << "Net Cost: " << netBestCost << endl;
 	randBestCost = initialCostRandom(count);
-	cout << "Rand Best Cost: " << randBestCost << endl;
-	if (netBestCost > bestCost && randBestCost > bestCost) cout << "Using 'Best Cost'" << endl;
+	cout << "Rand Cost: " << randBestCost << endl;
+	if (netBestCost > bestCost && randBestCost > bestCost) cout << "Using 'Connection Cost'" << endl;
 	else if (randBestCost > netBestCost) {
 		bestCost = netBestCost;
-		cout << "Using 'Net Best Cost'" << endl;
+		cout << "Using 'Net Cost'" << endl;
 	}
 	else {
 		bestCost = randBestCost;
-		cout << "Using 'Rand Best Cost'" << endl;
+		cout << "Using 'Rand Cost'" << endl;
 	}
 	utils::bbTree = new Tree();
 	std::list<Block*>::iterator it = queue.begin();
@@ -252,20 +252,20 @@ void doHeapedBandB(std::vector<Block> &blocks) {
 	int randBestCost;
 
 	//Get inital "best cost"
-	bestCost = initialCost(*queue.begin(), count);
-	cout << "Best Cost: " << bestCost << endl;
+	bestCost = initialCost(*queue.rbegin(), count);
+	cout << "Connection Cost: " << bestCost << endl;
 	netBestCost = initialCostNet(count);
-	cout << "Net Best Cost: " << netBestCost << endl;
+	cout << "Net Cost: " << netBestCost << endl;
 	randBestCost = initialCostRandom(count);
-	cout << "Rand Best Cost: " << randBestCost << endl;
-	if (netBestCost > bestCost && randBestCost > bestCost) cout << "Using 'Best Cost'" << endl;
+	cout << "Rand Cost: " << randBestCost << endl;
+	if (netBestCost > bestCost && randBestCost > bestCost) cout << "Using 'Connection Cost'" << endl;
 	else if (randBestCost > netBestCost) {
 		bestCost = netBestCost;
-		cout << "Using 'Net Best Cost'" << endl;
+		cout << "Using 'Net Cost'" << endl;
 	}
 	else {
 		bestCost = randBestCost;
-		cout << "Using 'Rand Best Cost'" << endl;
+		cout << "Using 'Rand Cost'" << endl;
 	}
 	updateBestCost(bestCost);
 
@@ -469,13 +469,13 @@ int initialCostNet(int maxcount) {
 //		sortedNets.push_back(&x);
 	//}
 	sortedNets.sort(sortNetPtrs);
-	std::list<std::list<int>*>::iterator netit;
+	std::list<std::list<int>*>::reverse_iterator netit;
 	std::list<int>::iterator blockit;
 
 	int blockcount = 0;
 	int cost = 0;
 
-	for (netit = sortedNets.begin(); blockcount < maxcount; netit++) {
+	for (netit = sortedNets.rbegin(); blockcount < maxcount; netit++) {
 		for (blockit = (*netit)->begin(); blockcount < maxcount && blockit != (*netit)->end(); blockit++) {
 			if (!utils::allBlocks[*blockit].isLeft()) {
 				blockcount++;

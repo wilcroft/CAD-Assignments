@@ -1,0 +1,5 @@
+ECE1387 Assignment 3 - Partitioning with Branch+Bound
+
+To build to partitioner, run 'make' in the directory. The makefile builds two executable: 'assignment3' and 'parallel-assignment3'. The parallel version uses threads to explore the tree in parallel.
+
+To run the program, use ./<executable> <circuit-file> . The circuit file should match the prescribed format.
