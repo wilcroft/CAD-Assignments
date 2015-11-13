@@ -64,6 +64,9 @@ bool Net::isCrossing() {
 	else return false;
 }
 
+void Net::setBlocks(std::list<int> * x) { blocks = x; }
+std::list<int> * Net::getBlocks() { return blocks; }
+
 int getCurrentCost(std::vector<Net> &n) {
 	int cost = 0;
 	for (auto&x : n) {
@@ -71,10 +74,48 @@ int getCurrentCost(std::vector<Net> &n) {
 	}
 	return cost;
 }
-int getLBCost(std::vector<Net> &n, int lfree, int rfree) {
+
+int getLBCost(std::vector<Net> &n, int lfree, int rfree, std::vector<Block> &b) {
 	int cost = 0;
-	for (auto&x : n) {
-		if (x.isCrossing() || x.mustCross(lfree, LEFTSIDE) || x.mustCross(rfree, RIGHTSIDE)) cost++;
+	std::vector<bool> netCosted;
+	netCosted.resize(n.size());
+	for (int i = 0; i < n.size(); i++) {
+		if (n[i].isCrossing() || n[i].mustCross(lfree, LEFTSIDE) || n[i].mustCross(rfree, RIGHTSIDE)) {
+			cost++;
+			netCosted[i] = true;
+		}
 	}
+	//for (auto&x : n) {
+	//	if (x.isCrossing() || x.mustCross(lfree, LEFTSIDE) || x.mustCross(rfree, RIGHTSIDE)) cost++;
+	//}
+
+	for (auto&x : b) {
+		if (x.isNoSide()) {
+			std::list<int> nets = x.getNets();
+			bool l = false, r = false;
+			int i =0;
+			for (auto&y : nets) {
+				i++;
+				if (!netCosted[y]) {
+					for (auto& z : *n[y].getBlocks()) {
+						if (!l &&b[z].isLeft()) l = true;
+						if (!r &&b[z].isRight()) r = true;
+						if (l&&r) break;
+					}
+
+				}
+				if (l&&r) break;
+			}
+			if (l&&r) {
+				cost++;
+				for (auto&y : nets) {
+					i--;
+					netCosted[i] = true;
+					if (i == 0) break;
+				}
+			}
+		}
+	}
+
 	return cost;
 }

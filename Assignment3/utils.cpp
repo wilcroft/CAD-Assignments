@@ -163,7 +163,7 @@ void exploreTree(std::list<Block*> &blocks, std::list<Block*>::iterator it, int 
 		return;
 	if (rcount > maxcount) 
 		return;
-	lbcost = getLBCost(utils::nets, maxcount - lcount, maxcount - rcount);
+	lbcost = getLBCost(utils::nets, maxcount - lcount, maxcount - rcount, utils::allBlocks);
 	if (lbcost > bestCost) return;
 	if (it == blocks.end() && currCost < bestCost) {
 		cout << "(" << currCost << ") ";
@@ -206,7 +206,7 @@ void exploreTree(std::list<Block*> &blocks, std::list<Block*>::iterator it, Stat
 		return;
 	if (s.rcount > s.maxcount)
 		return;
-	lbcost = getLBCost(s.nets, s.maxcount - s.lcount, s.maxcount - s.rcount);
+	lbcost = getLBCost(s.nets, s.maxcount - s.lcount, s.maxcount - s.rcount, s.blocks);
 	if (lbcost > utils::bestCost) return;
 	if (it == blocks.end() && s.cost < utils::bestCost) {
 		if (updateBestCost(s.cost))
@@ -352,7 +352,7 @@ void exploreState(State s, std::priority_queue<State, std::vector<State>, statec
 		return;
 	if (s.rcount > s.maxcount)
 		return;
-	lbcost = getLBCost(s.nets, s.maxcount - s.lcount, s.maxcount - s.rcount);
+	lbcost = getLBCost(s.nets, s.maxcount - s.lcount, s.maxcount - s.rcount, s.blocks);
 	if (lbcost > utils::bestCost) return;
 	if (s.it == s.queue->end() && s.cost < utils::bestCost) {
 		if (updateBestCost(s.cost))

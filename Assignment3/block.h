@@ -38,8 +38,10 @@ public:
 	void printConnections();
 	void sortConnections();
 	 std::vector<int>  getConnections();
+	 std::list<int>  getNets();
 	bool isLeft();
 	bool isRight();
+	bool isNoSide();
 	void setLeft(std::vector<Net> & netv = utils::nets);
 	void setRight(std::vector<Net> & netv = utils::nets);
 	void setNoSide(std::vector<Net> & netv = utils::nets);

@@ -9,6 +9,8 @@ private:
 	int count;  // number of blocks on left and right
 	int size; //number of blocks in the net
 
+	std::list<int> * blocks;
+
 public:
 //	Net();
 
@@ -28,8 +30,10 @@ public:
 	bool mustCross(int spaceToPlace, enum blockside b);
 	bool isCrossing();
 
+	void setBlocks(std::list<int> * x);
+	std::list<int> * getBlocks();
 
 };
 
 int getCurrentCost(std::vector<Net>& n);
-int getLBCost(std::vector<Net> &n, int lfree, int rfree);
+int getLBCost(std::vector<Net> &n, int lfree, int rfree, std::vector<Block> &b);

@@ -49,12 +49,16 @@ void Block::sortConnections() {
 }
 
  std::vector<int>  Block::getConnections() { return connections; }
+ std::list<int>  Block::getNets() { return nets; }
 
 bool Block::isLeft() {
 	return side==LEFTSIDE;
 }
 bool Block::isRight() {
 	return side==RIGHTSIDE;
+}
+bool Block::isNoSide() {
+	return side == NONE;
 }
 void Block::setLeft(std::vector<Net> & netv) {
 	if (side != LEFTSIDE) {
